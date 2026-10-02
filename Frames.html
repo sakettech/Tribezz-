@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Avatar Frames - Tribezz</title>
+
+  <!-- Google Fonts & Lucide Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg-darkest: #04070d;
+      --bg-surface: #0a0f1d;
+      --bg-card: rgba(16, 24, 40, 0.85);
+      --primary-gradient: linear-gradient(135deg, #00f2fe 0%, #8b5cf6 50%, #f43f5e 100%);
+      --accent-cyan: #00f2fe;
+      --accent-pink: #f43f5e;
+      --accent-purple: #8b5cf6;
+      --accent-gold: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(139, 92, 246, 0.45);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #010307;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .mobile-frame {
+      width: 100%;
+      max-width: 412px;
+      height: 100vh;
+      background-color: var(--bg-darkest);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 60px -15px rgba(0, 242, 254, 0.2), 0 0 0 1px var(--border-glass);
+    }
+
+    /* TOP NAVBAR */
+    .top-navbar {
+      height: 64px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      background: rgba(10, 15, 29, 0.94);
+      backdrop-filter: blur(18px);
+      z-index: 20;
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .back-btn {
+      color: var(--text-main);
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+    .page-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    /* COIN BALANCE PILL */
+    .coin-balance-pill {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .coin-balance-pill:active { transform: scale(0.95); }
+    .coin-balance-pill span {
+      color: var(--accent-gold);
+      font-size: 13.5px;
+      font-weight: 800;
+    }
+
+    /* TABS */
+    .tabs-container {
+      display: flex;
+      padding: 14px 16px 4px 16px;
+      gap: 12px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-glass);
+      color: var(--text-muted);
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: rgba(139, 92, 246, 0.15);
+      border-color: var(--border-focus);
+      color: var(--text-main);
+    }
+
+    /* SCROLLABLE GRID */
+    .frames-scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      scrollbar-width: none;
+    }
+    .frames-scroll-area::-webkit-scrollbar { display: none; }
+
+    .frames-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      padding-bottom: 20px;
+    }
+
+    /* FRAME CARD */
+    .frame-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 20px;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .rarity-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 3px 6px;
+      border-radius: 6px;
+    }
+    .r-basic { background: rgba(255,255,255,0.1); color: #cbd5e1; }
+    .r-rare { background: rgba(0, 242, 254, 0.15); color: #00f2fe; }
+    .r-epic { background: rgba(139, 92, 246, 0.15); color: #c084fc; }
+    .r-legendary { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    /* AVATAR RENDER CSS TRICKS */
+    .avatar-preview-box {
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      margin: 18px 0 12px 0;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .avatar-preview-box img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--bg-card);
+      z-index: 2;
+    }
+
+    .frame-badge-overlay {
+      position: absolute;
+      bottom: -4px;
+      z-index: 5;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 2px solid var(--bg-card);
+      color: #fff;
+    }
+
+    .frame-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+    
+    .action-btn {
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px 0;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      border: none;
+    }
+    .btn-buy {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: var(--accent-gold);
+    }
+    .btn-buy:active { transform: scale(0.95); background: rgba(245, 158, 11, 0.2); }
+    
+    .btn-equip {
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid rgba(0, 242, 254, 0.4);
+      color: var(--accent-cyan);
+    }
+    .btn-equip:active { transform: scale(0.95); }
+
+    .btn-equipped {
+      background: var(--primary-gradient);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    }
+
+    /* ==================== PURCHASE MODAL ==================== */
+    .purchase-modal-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(14px);
+      z-index: 100;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .purchase-modal-overlay.show { display: flex; }
+    
+    .purchase-card {
+      background: #0d1527;
+      border: 1px solid var(--border-focus);
+      border-radius: 24px;
+      padding: 24px;
+      width: 100%;
+      max-width: 320px;
+      text-align: center;
+      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .purchase-card h3 { font-size: 18px; color: #fff; margin-bottom: 8px; font-weight: 800; }
+    .purchase-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
+    
+    .modal-btn-row {
+      display: flex;
+      gap: 12px;
+    }
+    .modal-btn {
+      flex: 1;
+      padding: 12px 0;
+      border-radius: 14px;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-cancel {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .btn-confirm {
+      background: var(--accent-gold);
+      color: #000;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    }
+
+    /* ==================== PROFESSIONAL CUSTOM ALERT POPUP ==================== */
+    .custom-alert-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(14px);
+      z-index: 200;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .custom-alert-overlay.show { display: flex; }
+    
+    .custom-alert-card {
+      background: #0d1527;
+      border: 1px solid var(--border-focus);
+      border-radius: 24px;
+      padding: 24px 20px;
+      width: 100%;
+      max-width: 310px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.85);
+    }
+
+    .alert-icon-ring {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .alert-icon-ring.error {
+      background: rgba(244, 63, 94, 0.15);
+      border: 2px solid #f43f5e;
+      color: #f43f5e;
+      box-shadow: 0 0 20px rgba(244, 63, 94, 0.3);
+    }
+    .alert-icon-ring.success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 2px solid #10b981;
+      color: #10b981;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+    }
+    .alert-icon-ring.info {
+      background: rgba(0, 242, 254, 0.15);
+      border: 2px solid #00f2fe;
+      color: #00f2fe;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+    }
+
+    .custom-alert-card h3 { font-size: 17px; color: #fff; font-weight: 800; }
+    .custom-alert-card p { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
+    
+    .alert-ok-btn {
+      width: 100%;
+      margin-top: 8px;
+      padding: 12px 0;
+      border-radius: 14px;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      background: var(--primary-gradient);
+      color: #fff;
+    }
+    .alert-ok-btn:active { transform: scale(0.96); }
+
+  </style>
+</head>
+<body>
+
+  <div class="mobile-frame">
+    
+    <!-- Header -->
+    <header class="top-navbar">
+      <div class="nav-left">
+        <button class="back-btn" onclick="location.replace('Profile.html')">
+          <i data-lucide="arrow-left" size="24"></i>
+        </button>
+        <h1 class="page-title">Avatar Frames</h1>
+      </div>
+      <div class="coin-balance-pill" onclick="showCustomAlert('Earn EcoPoints', 'Complete Campus missions and recycle items to earn more EcoPoints!', 'info')">
+        <i data-lucide="coins" size="16" color="#f59e0b"></i>
+        <span id="userBalanceUI">2,500</span>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <button class="tab-btn active" id="tabShop" onclick="switchTab('shop')">Shop (50+)</button>
+      <button class="tab-btn" id="tabMyFrames" onclick="switchTab('inventory')">My Frames</button>
+    </div>
+
+    <!-- Scroll Grid -->
+    <main class="frames-scroll-area">
+      <div class="frames-grid" id="framesGrid">
+        <!-- JS WILL INJECT 50+ FRAMES HERE -->
+      </div>
+    </main>
+
+    <!-- Purchase Confirmation Popup -->
+    <div class="purchase-modal-overlay" id="purchaseModal">
+      <div class="purchase-card">
+        <h3>Confirm Purchase</h3>
+        <p>Unlock the <strong id="modalFrameName" style="color:#00f2fe;">Frame</strong> for <strong id="modalFramePrice" style="color:#f59e0b;">500</strong> Coins?</p>
+        <div class="modal-btn-row">
+          <button class="modal-btn btn-cancel" onclick="closeModal()">Cancel</button>
+          <button class="modal-btn btn-confirm" id="confirmBuyBtn">Unlock 🔓</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PROFESSIONAL CUSTOM ALERT / TOAST POPUP ==================== -->
+    <div class="custom-alert-overlay" id="customAlertOverlay">
+      <div class="custom-alert-card">
+        <div class="alert-icon-ring" id="alertIconRing">
+          <i data-lucide="alert-circle" size="28" id="alertIcon"></i>
+        </div>
+        <h3 id="alertTitle">Title</h3>
+        <p id="alertMessage">Message description goes here.</p>
+        <button class="alert-ok-btn" onclick="closeCustomAlert()">Got it</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // ==================== STATE MANAGEMENT ====================
+    let userCoins = parseInt(localStorage.getItem('ecoCoins')) || 2500;
+    
+    // Check local storage for inventory, otherwise give default frame
+    let ownedFrameIds = JSON.parse(localStorage.getItem('ecoOwnedFrames')) || ['f_default'];
+    let equippedFrameId = localStorage.getItem('ecoEquippedFrame') || 'f_default';
+
+    let currentTab = 'shop'; // 'shop' or 'inventory'
+    let selectedFrameToBuy = null;
+
+    // Update UI Balance
+    function updateBalanceUI() {
+      document.getElementById('userBalanceUI').innerText = userCoins.toLocaleString();
+      localStorage.setItem('ecoCoins', userCoins);
+    }
+    updateBalanceUI();
+
+    // ==================== PROFESSIONAL CUSTOM ALERT FUNCTION ====================
+    function showCustomAlert(title, message, type = 'info') {
+      document.getElementById('alertTitle').innerText = title;
+      document.getElementById('alertMessage').innerText = message;
+      
+      const ring = document.getElementById('alertIconRing');
+      const icon = document.getElementById('alertIcon');
+      
+      // Reset classes
+      ring.className = 'alert-icon-ring';
+      
+      if(type === 'error') {
+        ring.classList.add('error');
+        icon.setAttribute('data-lucide', 'x-circle');
+      } else if(type === 'success') {
+        ring.classList.add('success');
+        icon.setAttribute('data-lucide', 'check-circle-2');
+      } else {
+        ring.classList.add('info');
+        icon.setAttribute('data-lucide', 'info');
+      }
+      
+      lucide.createIcons();
+      document.getElementById('customAlertOverlay').classList.add('show');
+    }
+
+    function closeCustomAlert() {
+      document.getElementById('customAlertOverlay').classList.remove('show');
+    }
+
+    // ==================== 50+ FRAMES DATABASE GENERATOR ====================
+    const framesDatabase = [];
+
+    // 1. DEFAULT FRAME (Always Owned)
+    framesDatabase.push({
+      id: 'f_default', name: 'Classic Transparent', rarity: 'Basic', price: 0,
+      cssCode: `background: transparent; padding: 0;`
+    });
+
+    // 2. REFERENCE MATCHES (Legendary / Epic - from image_bffd25)
+    framesDatabase.push({
+      id: 'f_insta', name: 'Social Vibe', rarity: 'Epic', price: 1200,
+      cssCode: `background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); padding: 4px;`
+    });
+    framesDatabase.push({
+      id: 'f_live', name: 'Streamer Badge', rarity: 'Legendary', price: 1800,
+      cssCode: `background: linear-gradient(135deg, #f59e0b, #f43f5e); padding: 4px;`,
+      badgeHtml: `<div class="frame-badge-overlay" style="background:linear-gradient(90deg, #f43f5e, #f97316); bottom:-8px;">LIVE</div>`
+    });
+    framesDatabase.push({
+      id: 'f_tiktok', name: 'Glitch Ring', rarity: 'Legendary', price: 1950,
+      cssCode: `background: transparent; box-shadow: -3px -3px 0 #00f2fe, 3px 3px 0 #f43f5e; padding: 2px;`
+    });
+    framesDatabase.push({
+      id: 'f_plus', name: 'Creator Plus', rarity: 'Epic', price: 1400,
+      cssCode: `background: #00f2fe; padding: 3px;`,
+      badgeHtml: `<div class="frame-badge-overlay" style="background:#00f2fe; color:#000; right:-5px; bottom:5px; border-radius:50%; width:20px; height:20px; font-size:14px; padding:0; line-height:16px;">+</div>`
+    });
+    framesDatabase.push({
+      id: 'f_sub', name: 'Subscribe Ring', rarity: 'Legendary', price: 2000,
+      cssCode: `background: #ef4444; padding: 4px;`,
+      badgeHtml: `<div class="frame-badge-overlay" style="background:#ef4444; bottom:-10px;">SUBSCRIBE</div>`
+    });
+    framesDatabase.push({
+      id: 'f_verified', name: 'Eco Verified', rarity: 'Legendary', price: 1850,
+      cssCode: `background: #10b981; padding: 4px;`,
+      badgeHtml: `<div class="frame-badge-overlay" style="background:#10b981; color:#000; right:-2px; bottom:5px; border-radius:50%; width:18px; height:18px; display:flex; justify-content:center; align-items:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>`
+    });
+    framesDatabase.push({
+      id: 'f_cyber', name: 'Cyberpunk Neon', rarity: 'Epic', price: 1500,
+      cssCode: `background: #000; border: 2px dashed #00f2fe; box-shadow: 0 0 15px #00f2fe; padding: 3px;`
+    });
+
+    // 3. AUTO-GENERATE REMAINING 45 FRAMES to cross 50+ limit
+    const colors = [
+      { n: 'Ruby', c1: '#ff0844', c2: '#ffb199' },
+      { n: 'Ocean', c1: '#4facfe', c2: '#00f2fe' },
+      { n: 'Toxic', c1: '#0ba360', c2: '#3cba92' },
+      { n: 'Amethyst', c1: '#667eea', c2: '#764ba2' },
+      { n: 'Sunset', c1: '#fa709a', c2: '#fee140' },
+      { n: 'Gold', c1: '#f6d365', c2: '#fda085' },
+      { n: 'Midnight', c1: '#30cfd0', c2: '#330867' },
+      { n: 'Forest', c1: '#43e97b', c2: '#38f9d7' },
+      { n: 'Plasma', c1: '#f43f5e', c2: '#8b5cf6' }
+    ];
+
+    let autoId = 1;
+    colors.forEach(col => {
+      // Basic Solid Variations
+      framesDatabase.push({
+        id: `f_auto_${autoId++}`, name: `${col.n} Solid`, rarity: 'Basic', price: 350,
+        cssCode: `background: ${col.c1}; padding: 3px;`
+      });
+      // Rare Gradient Variations
+      framesDatabase.push({
+        id: `f_auto_${autoId++}`, name: `${col.n} Aura`, rarity: 'Rare', price: 750,
+        cssCode: `background: linear-gradient(135deg, ${col.c1}, ${col.c2}); padding: 4px;`
+      });
+      // Epic Glow Variations
+      framesDatabase.push({
+        id: `f_auto_${autoId++}`, name: `${col.n} Glow`, rarity: 'Epic', price: 1100,
+        cssCode: `background: ${col.c1}; padding: 3px; box-shadow: 0 0 15px ${col.c1};`
+      });
+      // Epic Dashed Variations
+      framesDatabase.push({
+        id: `f_auto_${autoId++}`, name: `${col.n} Dash`, rarity: 'Epic', price: 1250,
+        cssCode: `background: transparent; border: 3px dashed ${col.c2}; padding: 2px;`
+      });
+      // Legendary Badge Variations
+      framesDatabase.push({
+        id: `f_auto_${autoId++}`, name: `${col.n} Pro`, rarity: 'Legendary', price: 1700,
+        cssCode: `background: linear-gradient(135deg, ${col.c1}, ${col.c2}); padding: 4px;`,
+        badgeHtml: `<div class="frame-badge-overlay" style="background:${col.c1}; color:#fff; right:-5px; bottom:2px;">PRO</div>`
+      });
+    });
+
+    // ==================== RENDER LOGIC ====================
+    const grid = document.getElementById('framesGrid');
+
+    function renderFrames() {
+      grid.innerHTML = '';
+      
+      const isShop = currentTab === 'shop';
+      
+      // Filter logic
+      const framesToShow = isShop ? framesDatabase : framesDatabase.filter(f => ownedFrameIds.includes(f.id));
+
+      if(framesToShow.length === 0) {
+        grid.innerHTML = `<div style="grid-column: span 2; text-align:center; color:var(--text-muted); padding: 40px 0;">You don't own any frames yet. Buy from Shop!</div>`;
+        return;
+      }
+
+      framesToShow.forEach(frame => {
+        const isOwned = ownedFrameIds.includes(frame.id);
+        const isEquipped = equippedFrameId === frame.id;
+        
+        let rClass = 'r-basic';
+        if(frame.rarity === 'Rare') rClass = 'r-rare';
+        if(frame.rarity === 'Epic') rClass = 'r-epic';
+        if(frame.rarity === 'Legendary') rClass = 'r-legendary';
+
+        let buttonHtml = '';
+        if (isEquipped) {
+          buttonHtml = `<button class="action-btn btn-equipped"><i data-lucide="check-circle" size="14"></i> Equipped</button>`;
+        } else if (isOwned) {
+          buttonHtml = `<button class="action-btn btn-equip" onclick="equipFrame('${frame.id}')"><i data-lucide="check" size="14"></i> Equip</button>`;
+        } else {
+          buttonHtml = `<button class="action-btn btn-buy" onclick="promptBuy('${frame.id}')"><i data-lucide="lock" size="14"></i> ${frame.price} Coins</button>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'frame-card';
+        card.innerHTML = `
+          <div class="rarity-badge ${rClass}">${frame.rarity}</div>
+          
+          <div class="avatar-preview-box" style="${frame.cssCode}">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Preview" />
+            ${frame.badgeHtml ? frame.badgeHtml : ''}
+          </div>
+          
+          <h4 class="frame-name">${frame.name}</h4>
+          ${buttonHtml}
+        `;
+        grid.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    // ==================== INTERACTION LOGIC ====================
+    function switchTab(tab) {
+      currentTab = tab;
+      document.getElementById('tabShop').classList.remove('active');
+      document.getElementById('tabMyFrames').classList.remove('active');
+      
+      if(tab === 'shop') document.getElementById('tabShop').classList.add('active');
+      else document.getElementById('tabMyFrames').classList.add('active');
+      
+      renderFrames();
+    }
+
+    // Purchase Flow
+    function promptBuy(frameId) {
+      selectedFrameToBuy = framesDatabase.find(f => f.id === frameId);
+      if(!selectedFrameToBuy) return;
+
+      if(userCoins < selectedFrameToBuy.price) {
+        showCustomAlert('Insufficient EcoPoints', 'You do not have enough coins to unlock this frame. Complete campus missions to earn more!', 'error');
+        return;
+      }
+
+      document.getElementById('modalFrameName').innerText = selectedFrameToBuy.name;
+      document.getElementById('modalFramePrice').innerText = selectedFrameToBuy.price;
+      document.getElementById('purchaseModal').classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('purchaseModal').classList.remove('show');
+      selectedFrameToBuy = null;
+    }
+
+    document.getElementById('confirmBuyBtn').addEventListener('click', () => {
+      if(!selectedFrameToBuy) return;
+      
+      // Deduct Coins
+      userCoins -= selectedFrameToBuy.price;
+      updateBalanceUI();
+
+      // Add to inventory
+      ownedFrameIds.push(selectedFrameToBuy.id);
+      localStorage.setItem('ecoOwnedFrames', JSON.stringify(ownedFrameIds));
+
+      // Close modal & re-render
+      closeModal();
+      renderFrames();
+      
+      // Auto switch to My Frames to show it off
+      showCustomAlert('Frame Unlocked! 🎉', `You have successfully purchased the ${selectedFrameToBuy.name} frame. Go to My Frames to equip it!`, 'success');
+    });
+
+    // Equip Flow
+    function equipFrame(frameId) {
+      equippedFrameId = frameId;
+      localStorage.setItem('ecoEquippedFrame', equippedFrameId);
+      renderFrames();
+      showCustomAlert('Frame Equipped! ✨', 'This avatar frame will now be visible on your profile and posts.', 'success');
+    }
+
+    // Initial Load
+    renderFrames();
+
+  </script>
+</body>
+</html>

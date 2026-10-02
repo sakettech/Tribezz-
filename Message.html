@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Direct Messages • Tribezz</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg-darkest: #050811;
+      --bg-surface: #0a101d;
+      --bg-card: rgba(18, 26, 44, 0.75);
+      --primary-gradient: linear-gradient(135deg, #00f2fe 0%, #8b5cf6 50%, #f43f5e 100%);
+      --snap-me-red: #ff2d55;
+      --snap-user-blue: #00f2fe;
+      --accent-cyan: #00f2fe;
+      --accent-purple: #8b5cf6;
+      --accent-pink: #f43f5e;
+      --accent-emerald: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(139, 92, 246, 0.45);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background-color: #010307;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .mobile-frame {
+      width: 100%;
+      max-width: 412px;
+      height: 100vh;
+      background-color: var(--bg-darkest);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 30px 80px -20px rgba(0, 242, 254, 0.25), 0 0 0 1px var(--border-glass);
+    }
+
+    /* Top Inbox Header */
+    .inbox-header {
+      height: 64px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 18px;
+      background: rgba(10, 16, 29, 0.94);
+      backdrop-filter: blur(18px);
+      z-index: 20;
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .account-switcher {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 12px;
+    }
+    .account-switcher:active { background: rgba(255, 255, 255, 0.06); }
+
+    .account-handle {
+      font-size: 19px;
+      font-weight: 900;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .inbox-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-action-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .header-action-btn:active { transform: scale(0.92); }
+
+    /* Scrollable Inbox Body */
+    .inbox-content {
+      flex: 1;
+      background-color: var(--bg-surface);
+      overflow-y: auto;
+      padding: 14px 16px 110px 16px; /* space for capsule dock */
+      scrollbar-width: none;
+    }
+    .inbox-content::-webkit-scrollbar { display: none; }
+
+    /* Search Bar */
+    .search-pill-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-glass);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      gap: 10px;
+      margin-bottom: 14px;
+      color: var(--text-muted);
+    }
+    .search-pill-box input {
+      background: none;
+      border: none;
+      color: #fff;
+      width: 100%;
+      font-size: 13px;
+      outline: none;
+    }
+
+    /* Notes Tray */
+    .notes-active-tray {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      padding: 12px 4px 18px 4px;
+      margin-bottom: 6px;
+      scrollbar-width: none;
+    }
+    .notes-active-tray::-webkit-scrollbar { display: none; }
+
+    .note-avatar-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .my-note-add-badge {
+      position: absolute;
+      top: 0; right: 0;
+      width: 20px; height: 20px;
+      background: var(--accent-cyan);
+      border: 2px solid var(--bg-surface);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #000;
+      font-weight: 900;
+      z-index: 8;
+    }
+
+    .note-thought-bubble {
+      position: absolute;
+      top: -14px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid var(--border-focus);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 12px;
+      white-space: nowrap;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      max-width: 110px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all 0.2s;
+    }
+    .note-thought-bubble.playing {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 242, 254, 0.15);
+      color: var(--accent-cyan);
+    }
+
+    .music-note-tag {
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+    }
+    .music-animated {
+      animation: musicBounce 1.2s infinite ease-in-out;
+    }
+    @keyframes musicBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+
+    .user-story-ring {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      padding: 2.5px;
+      background: var(--primary-gradient);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .user-story-ring img {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2.5px solid var(--bg-surface);
+    }
+
+    .status-green-dot {
+      position: absolute;
+      bottom: 2px; right: 2px;
+      width: 12px; height: 12px;
+      background: #10b981;
+      border: 2px solid var(--bg-surface);
+      border-radius: 50%;
+    }
+
+    .note-username {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      max-width: 65px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Inbox Tab Switcher */
+    .inbox-nav-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-glass);
+      margin: 8px 0 14px 0;
+      position: relative;
+    }
+
+    .inbox-nav-tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 0;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text-muted);
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+    .inbox-nav-tab.active { color: #ffffff; }
+    .inbox-nav-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 20%; right: 20%;
+      height: 2.5px;
+      background: var(--primary-gradient);
+      border-radius: 3px;
+    }
+
+    .request-badge-count {
+      background: var(--accent-pink);
+      color: #fff;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      margin-left: 6px;
+      font-weight: 800;
+    }
+
+    /* Chat Threads */
+    .threads-container {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .thread-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .thread-card:active { transform: scale(0.97); }
+
+    .thread-avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--border-glass);
+    }
+
+    .thread-details { flex: 1; overflow: hidden; }
+    .thread-name-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3px;
+    }
+    .thread-name-line h4 { font-size: 14px; font-weight: 800; color: #fff; }
+    .thread-time { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+    .thread-preview-line { display: flex; justify-content: space-between; align-items: center; }
+    .thread-snippet {
+      font-size: 12.5px;
+      color: #cbd5e1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 220px;
+    }
+    .unread-pill-bubble {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent-pink);
+      box-shadow: 0 0 10px var(--accent-pink);
+    }
+
+    .request-action-buttons {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .req-btn {
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+    }
+    .req-btn-accept { background: var(--accent-cyan); color: #000; }
+    .req-btn-delete { background: rgba(255, 255, 255, 0.08); color: #cbd5e1; }
+
+    /* ==================== SLIDE-IN CHAT ROOM ==================== */
+    .chat-room-screen {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--bg-darkest);
+      z-index: 80;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .chat-room-screen.open { transform: translateX(0); }
+
+    .chat-room-navbar {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      background: rgba(10, 16, 29, 0.95);
+      border-bottom: 1px solid var(--border-glass);
+      backdrop-filter: blur(18px);
+      z-index: 10;
+    }
+
+    .chat-header-identity {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .chat-back-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 4px;
+    }
+
+    .chat-room-dp {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-purple);
+    }
+
+    .chat-meta h4 { font-size: 14.5px; font-weight: 800; color: #fff; }
+    .chat-meta span { font-size: 10.5px; color: #10b981; font-weight: 600; }
+
+    .conversation-canvas {
+      flex: 1;
+      padding: 16px 14px 10px 14px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scrollbar-width: none;
+      position: relative;
+    }
+    .conversation-canvas::-webkit-scrollbar { display: none; }
+
+    .chat-date-separator {
+      align-self: center;
+      font-size: 10.5px;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px 12px;
+      border-radius: 12px;
+      margin: 6px 0;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .snap-msg-strip {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      padding-left: 10px;
+      position: relative;
+      margin: 4px 0;
+    }
+    .snap-msg-strip.me { border-left: 3px solid var(--snap-me-red); }
+    .snap-msg-strip.sender { border-left: 3px solid var(--snap-user-blue); }
+
+    .snap-sender-tag {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+    .snap-msg-strip.me .snap-sender-tag { color: var(--snap-me-red); }
+    .snap-msg-strip.sender .snap-sender-tag { color: var(--snap-user-blue); }
+
+    .snap-msg-body {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .snap-sticker-img {
+      max-width: 180px;
+      border-radius: 16px;
+      margin-top: 4px;
+      display: block;
+    }
+
+    .snap-time-tag {
+      font-size: 9.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      font-weight: 500;
+    }
+
+    /* Bitmoji Peeker */
+    .snap-bitmoji-peeker-dock {
+      position: absolute;
+      bottom: 64px;
+      left: 14px;
+      display: none;
+      align-items: flex-end;
+      z-index: 50;
+      animation: snapBitmojiPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .snap-bitmoji-peeker-dock.active { display: flex; }
+
+    @keyframes snapBitmojiPop {
+      0% { transform: translateY(50px) scale(0.5); opacity: 0; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .bitmoji-peeker-container {
+      position: relative;
+      width: 58px; height: 64px;
+      display: flex;
+      align-items: flex-end;
+    }
+    .bitmoji-svg-char {
+      width: 50px; height: 52px;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
+    }
+
+    .thought-cloud-bubble {
+      position: absolute;
+      top: -2px; right: -12px;
+      background: #ffffff;
+      border: 1.5px solid #1e293b;
+      border-radius: 16px 16px 16px 4px;
+      padding: 5px 8px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    }
+    .thought-cloud-tail {
+      position: absolute;
+      bottom: -6px; left: 4px;
+      width: 6px; height: 6px;
+      background: #ffffff;
+      border: 1.5px solid #1e293b;
+      border-radius: 50%;
+    }
+    .thought-cloud-tail-small {
+      position: absolute;
+      bottom: -11px; left: 1px;
+      width: 4px; height: 4px;
+      background: #ffffff;
+      border: 1px solid #1e293b;
+      border-radius: 50%;
+    }
+    .cloud-dot {
+      width: 4px; height: 4px;
+      background: #1e293b;
+      border-radius: 50%;
+      animation: cloudDotBounce 1.2s infinite ease-in-out;
+    }
+    .cloud-dot:nth-child(2) { animation-delay: 0.2s; }
+    .cloud-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes cloudDotBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    .snap-input-bar {
+      padding: 10px 14px;
+      background: rgba(10, 16, 29, 0.98);
+      border-top: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 10;
+    }
+    .camera-round-btn {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-glass);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .input-field-shell {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      height: 42px;
+    }
+    .input-field-shell input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 13.5px;
+      outline: none;
+    }
+    .input-addon-icons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+    }
+    .send-trigger-btn {
+      background: none;
+      border: none;
+      color: var(--accent-cyan);
+      cursor: pointer;
+      font-size: 13.5px;
+      font-weight: 800;
+      display: none;
+    }
+
+    /* ==================== SPOTIFY MODAL ==================== */
+    .note-modal-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(14px);
+      z-index: 100;
+      display: none;
+      justify-content: flex-end;
+      flex-direction: column;
+    }
+    .note-modal-overlay.open { display: flex; }
+
+    .note-modal-sheet {
+      background: #0d1527;
+      border-top: 1px solid var(--border-focus);
+      border-radius: 28px 28px 0 0;
+      padding: 20px;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.85);
+      animation: slideSheetUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      max-height: 88%;
+      display: flex;
+      flex-direction: column;
+    }
+    @keyframes slideSheetUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .note-sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .note-sheet-header h3 { font-size: 16px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px; }
+    .note-sheet-close {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #fff;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .note-input-thought {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+    .spotify-search-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .spotify-search-box input {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 13px;
+      width: 100%;
+      outline: none;
+    }
+    .song-picker-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 180px;
+      overflow-y: auto;
+      margin-bottom: 14px;
+      scrollbar-width: none;
+    }
+    .song-picker-list::-webkit-scrollbar { display: none; }
+    .song-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .song-item-row.selected {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 242, 254, 0.12);
+    }
+    .song-details-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+    }
+    .song-cover-mini {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    .song-text-meta {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      max-width: 220px;
+    }
+    .song-text-meta h5 { font-size: 13px; font-weight: 700; color: #fff; }
+    .song-text-meta span { font-size: 11px; color: var(--text-muted); }
+    .song-play-btn-mini {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .save-note-action-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 16px;
+      background: var(--primary-gradient);
+      border: none;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+    }
+
+    /* ==========================================================================
+       🌟 ULTRA-PREMIUM GLASS CAPSULE FLOATING DOCK
+       ========================================================================== */
+    .capsule-dock-wrapper {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+      pointer-events: none;
+      padding: 0 16px;
+    }
+
+    .glass-capsule-dock {
+      pointer-events: auto;
+      width: 100%;
+      max-width: 370px;
+      height: 64px;
+      background: rgba(12, 18, 33, 0.65);
+      backdrop-filter: blur(28px) saturate(210%);
+      -webkit-backdrop-filter: blur(28px) saturate(210%);
+      border: 1.2px solid rgba(255, 255, 255, 0.12);
+      border-top: 1.2px solid rgba(255, 255, 255, 0.22);
+      border-radius: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.85),
+                  0 0 24px -4px rgba(0, 242, 254, 0.12),
+                  inset 0 1px 2px rgba(255, 255, 255, 0.2),
+                  inset 0 -1px 2px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .capsule-tab-item {
+      background: transparent;
+      border: none;
+      outline: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      color: #94a3b8;
+      cursor: pointer;
+      position: relative;
+      padding: 8px 12px;
+      border-radius: 26px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      flex: 1;
+    }
+
+    .capsule-tab-item:active {
+      transform: scale(0.92);
+    }
+
+    .capsule-tab-item i {
+      transition: all 0.25s ease;
+      stroke-width: 2.2px;
+    }
+
+    .capsule-tab-item span {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      transition: all 0.25s ease;
+    }
+
+    /* Active State Glowing Pill */
+    .capsule-tab-item.active {
+      color: #ffffff;
+      background: linear-gradient(180deg, rgba(0, 242, 254, 0.16) 0%, rgba(139, 92, 246, 0.08) 100%);
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      box-shadow: 0 4px 16px -2px rgba(0, 242, 254, 0.35),
+                  inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    }
+
+    .capsule-tab-item.active i {
+      color: var(--accent-cyan);
+      filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.85));
+      transform: translateY(-1px);
+    }
+
+    .capsule-tab-item.active span {
+      color: #ffffff;
+      font-weight: 800;
+      text-shadow: 0 0 10px rgba(0, 242, 254, 0.6);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-frame">
+
+    <header class="inbox-header">
+      <div class="account-switcher" onclick="location.replace('Profile.html')">
+        <h2 class="account-handle" id="topAccountHandle">saket_janghel_22</h2>
+        <i data-lucide="chevron-down" size="16" color="#94a3b8"></i>
+      </div>
+      <div class="inbox-actions">
+        <button type="button" class="header-action-btn" title="Add Spotify Note" onclick="openNoteModal()">
+          <i data-lucide="music" size="18" color="#00f2fe"></i>
+        </button>
+        <button type="button" class="header-action-btn" title="New Chat">
+          <i data-lucide="square-pen" size="18"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="inbox-content">
+
+      <div class="search-pill-box">
+        <i data-lucide="search" size="17"></i>
+        <input type="text" placeholder="Search direct messages..." />
+      </div>
+
+      <div class="notes-active-tray" id="notesTray">
+        <div class="note-avatar-unit" onclick="handleMyNoteClick()">
+          <div class="note-thought-bubble" id="myNoteBubbleTag">
+            <i data-lucide="music-2" size="11" class="music-note-tag music-animated" id="myNoteIcon"></i>
+            <span id="myNoteText">Share a thought...</span>
+          </div>
+          <div class="user-story-ring" style="background: var(--primary-gradient);">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" id="myNoteAvatar" alt="My Avatar" />
+            <div class="my-note-add-badge" id="myNotePlusBtn">+</div>
+          </div>
+          <span class="note-username">Your Note</span>
+        </div>
+
+        <div class="note-avatar-unit" onclick="playFriendNoteSong('Tu Hai Kahan • AUR')">
+          <div class="note-thought-bubble">
+            <i data-lucide="music" size="11" class="music-note-tag music-animated"></i>
+            <span>Tu Hai Kahan 🎧</span>
+          </div>
+          <div class="user-story-ring">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" alt="Rahul" />
+            <span class="status-green-dot"></span>
+          </div>
+          <span class="note-username">Rahul</span>
+        </div>
+
+        <div class="note-avatar-unit" onclick="playFriendNoteSong('Starboy • Weeknd')">
+          <div class="note-thought-bubble">
+            <i data-lucide="music" size="11" class="music-note-tag music-animated"></i>
+            <span>Starboy ⚡</span>
+          </div>
+          <div class="user-story-ring">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" alt="Yash" />
+            <span class="status-green-dot"></span>
+          </div>
+          <span class="note-username">Yash</span>
+        </div>
+
+        <div class="note-avatar-unit" onclick="playFriendNoteSong('Husn • Anuv Jain')">
+          <div class="note-thought-bubble">
+            <i data-lucide="music" size="11" class="music-note-tag music-animated"></i>
+            <span>Husn 🌸</span>
+          </div>
+          <div class="user-story-ring">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" alt="Ananya" />
+            <span class="status-green-dot"></span>
+          </div>
+          <span class="note-username">Ananya</span>
+        </div>
+      </div>
+
+      <div class="inbox-nav-tabs">
+        <div class="inbox-nav-tab active" id="tabPrimaryBtn" onclick="switchInboxTab('primary')">
+          Primary
+        </div>
+        <div class="inbox-nav-tab" id="tabRequestsBtn" onclick="switchInboxTab('requests')">
+          Requests <span class="request-badge-count" id="reqCountBadge">2</span>
+        </div>
+      </div>
+
+      <div class="threads-container" id="primaryThreadsContainer">
+        <div class="thread-card" onclick="openChat('rahul')">
+          <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" alt="Rahul" class="thread-avatar" />
+          <div class="thread-details">
+            <div class="thread-name-line">
+              <h4>Rahul Raj</h4>
+              <span class="thread-time">Just now</span>
+            </div>
+            <div class="thread-preview-line">
+              <p class="thread-snippet" id="threadSnippet-rahul">Online • Tap to chat</p>
+              <span class="unread-pill-bubble"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="thread-card" onclick="openChat('yash')">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" alt="Yash" class="thread-avatar" />
+          <div class="thread-details">
+            <div class="thread-name-line">
+              <h4>Yash Dwivedi</h4>
+              <span class="thread-time">Yesterday</span>
+            </div>
+            <div class="thread-preview-line">
+              <p class="thread-snippet">Sent you UI mockups</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="threads-container" id="requestsThreadsContainer" style="display: none;">
+        <div class="thread-card" id="reqCard-priya">
+          <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150" alt="Priya" class="thread-avatar" />
+          <div class="thread-details">
+            <div class="thread-name-line">
+              <h4>Priya Sharma</h4>
+              <span class="thread-time">2h ago</span>
+            </div>
+            <p class="thread-snippet">Hey! Wanted to ask about the Tribezz hackathon...</p>
+            <div class="request-action-buttons">
+              <button type="button" class="req-btn req-btn-accept" onclick="acceptChatRequest('Priya Sharma', 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150', 'reqCard-priya')">Accept</button>
+              <button type="button" class="req-btn req-btn-delete" onclick="deleteChatRequest('reqCard-priya')">Delete</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="thread-card" id="reqCard-aman">
+          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150" alt="Aman" class="thread-avatar" />
+          <div class="thread-details">
+            <div class="thread-name-line">
+              <h4>Aman Verma</h4>
+              <span class="thread-time">1d ago</span>
+            </div>
+            <p class="thread-snippet">Is the Engineering Physics drafter still available?</p>
+            <div class="request-action-buttons">
+              <button type="button" class="req-btn req-btn-accept" onclick="acceptChatRequest('Aman Verma', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150', 'reqCard-aman')">Accept</button>
+              <button type="button" class="req-btn req-btn-delete" onclick="deleteChatRequest('reqCard-aman')">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <div class="chat-room-screen" id="chatRoom">
+      <div class="chat-room-navbar">
+        <div class="chat-header-identity">
+          <button type="button" class="chat-back-btn" onclick="closeChat()">
+            <i data-lucide="arrow-left" size="22"></i>
+          </button>
+          <img src="" id="chatAvatar" class="chat-room-dp" alt="Avatar" />
+          <div class="chat-meta">
+            <h4 id="chatName">Rahul Raj</h4>
+            <span id="chatStatus">Active now</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 14px; color: #cbd5e1;">
+          <i data-lucide="phone" size="20" style="cursor:pointer;" onclick="alert('Calling...')"></i>
+          <i data-lucide="video" size="21" style="cursor:pointer;" onclick="alert('Video calling...')"></i>
+        </div>
+      </div>
+
+      <div class="conversation-canvas" id="chatMessages"></div>
+
+      <div class="snap-bitmoji-peeker-dock" id="snapBitmojiPeeker">
+        <div class="bitmoji-peeker-container">
+          <svg class="bitmoji-svg-char" viewBox="0 0 100 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15,100 C15,80 35,76 50,76 C65,76 85,80 85,100 L85,110 L15,110 Z" fill="#F59E0B" stroke="#1E293B" stroke-width="3" />
+            <path d="M50,76 L50,110" stroke="#B45309" stroke-width="2.5" />
+            <path d="M40,95 C40,84 55,84 58,95 Z" fill="#FBBF24" stroke="#1E293B" stroke-width="2.5" />
+            <ellipse cx="50" cy="52" rx="26" ry="28" fill="#FBBF24" stroke="#1E293B" stroke-width="3" />
+            <ellipse cx="38" cy="46" rx="6" ry="7" fill="#FFFFFF" stroke="#1E293B" stroke-width="2" />
+            <circle cx="39" cy="42" r="3.5" fill="#1E293B" />
+            <ellipse cx="62" cy="46" rx="6" ry="7" fill="#FFFFFF" stroke="#1E293B" stroke-width="2" />
+            <circle cx="63" cy="42" r="3.5" fill="#1E293B" />
+            <rect x="28" y="38" width="20" height="16" rx="5" fill="none" stroke="#1E293B" stroke-width="3" />
+            <rect x="52" y="38" width="20" height="16" rx="5" fill="none" stroke="#1E293B" stroke-width="3" />
+            <line x1="48" y1="46" x2="52" y2="46" stroke="#1E293B" stroke-width="3" />
+            <path d="M45,68 Q50,73 55,68" fill="none" stroke="#1E293B" stroke-width="2.5" stroke-linecap="round" />
+            <path d="M48,74 L52,74" stroke="#92400E" stroke-width="2" stroke-linecap="round" />
+            <path d="M22,42 C22,22 78,22 78,42 C78,43 22,43 22,42 Z" fill="#F472B6" stroke="#1E293B" stroke-width="3" />
+            <path d="M30,42 C30,46 70,46 70,42" fill="#DB2777" stroke="#1E293B" stroke-width="2" />
+          </svg>
+          <div class="thought-cloud-bubble">
+            <div class="cloud-dot"></div>
+            <div class="cloud-dot"></div>
+            <div class="cloud-dot"></div>
+            <div class="thought-cloud-tail"></div>
+            <div class="thought-cloud-tail-small"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="snap-input-bar">
+        <button type="button" class="camera-round-btn" onclick="sendStickerQuick()">
+          <i data-lucide="smile" size="19"></i>
+        </button>
+        <div class="input-field-shell">
+          <input type="text" id="chatInput" placeholder="Send a chat..." oninput="handleTypingEvent(this)" onkeypress="handleEnterKey(event)" />
+          <div class="input-addon-icons" id="inputAddons">
+            <i data-lucide="mic" size="19" style="cursor:pointer;" onclick="alert('Voice recording...')"></i>
+            <i data-lucide="image" size="19" style="cursor:pointer;" onclick="sendStickerQuick()"></i>
+          </div>
+          <button type="button" class="send-trigger-btn" id="sendBtn" onclick="dispatchMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="note-modal-overlay" id="noteModalOverlay">
+      <div class="note-modal-sheet">
+        <div class="note-sheet-header">
+          <h3><i data-lucide="music" size="18" color="#00f2fe"></i> Spotify Soundtrack Note</h3>
+          <button type="button" class="note-sheet-close" onclick="closeNoteModal()">
+            <i data-lucide="x" size="16"></i>
+          </button>
+        </div>
+
+        <input type="text" class="note-input-thought" id="noteThoughtInput" placeholder="What's on your mind? (e.g. Late night coding...)" maxlength="45" />
+
+        <div class="spotify-search-box">
+          <i data-lucide="search" size="15" color="#64748b"></i>
+          <input type="text" id="spotifySearchInput" placeholder="Search Hindi, English, Punjabi or Lofi..." oninput="searchSpotifyTracks(this.value)" />
+        </div>
+
+        <div class="song-picker-list" id="spotifyTrackResults"></div>
+
+        <button type="button" class="save-note-action-btn" onclick="saveUserNote()">Share Note with Spotify Track 🎵</button>
+      </div>
+    </div>
+
+    <div class="capsule-dock-wrapper">
+      <nav class="glass-capsule-dock">
+        
+        <button type="button" class="capsule-tab-item" onclick="location.replace('index.html')">
+          <i data-lucide="compass" size="20"></i>
+          <span>Explore</span>
+        </button>
+
+        <button type="button" class="capsule-tab-item" onclick="location.replace('Reels.html')">
+          <i data-lucide="play-circle" size="20"></i>
+          <span>Reels</span>
+        </button>
+
+        <button type="button" class="capsule-tab-item active">
+          <i data-lucide="message-square" size="20"></i>
+          <span>Chat</span>
+        </button>
+
+        <button type="button" class="capsule-tab-item" onclick="location.replace('Search.html')">
+          <i data-lucide="search" size="20"></i>
+          <span>Search</span>
+        </button>
+
+        <button type="button" class="capsule-tab-item" onclick="location.replace('Profile.html')">
+          <i data-lucide="user" size="20"></i>
+          <span>Profile</span>
+        </button>
+
+      </nav>
+    </div>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // 🔴 SPOTIFY RAPIDAPI CONFIGURATION
+    const SPOTIFY_API_KEY = 'f378ae8eadmsh5999610d1011ab0p12c3acjsnd321e469b3fd';
+    const SPOTIFY_API_HOST = 'spotify23.p.rapidapi.com';
+
+    let currentPlayingAudio = null;
+    let selectedSongData = {
+      title: "Tu Hai Kahan",
+      artist: "AUR",
+      cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100",
+      previewUrl: null
+    };
+
+    const fallbackSongsDB = [
+      { title: "Tu Hai Kahan", artist: "AUR • Trending Hindi", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100", trackId: "4snRyiaLyvTMui0hzp8MF7" },
+      { title: "Starboy", artist: "The Weeknd • Global Pop", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=100", trackId: "7MXVkk9YM5Zm0v4wNsENEL" },
+      { title: "Husn", artist: "Anuv Jain • Indie Hindi", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=100", trackId: "0VjIjW4GlUZAMYd2vXMi3b" },
+      { title: "Lover", artist: "Diljit Dosanjh • Punjabi Hits", cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100", trackId: "51RFqyY1w2ZpG2O75T275W" },
+      { title: "Midnight City", artist: "M83 • Synthwave Lo-Fi", cover: "https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=100", trackId: "1eyzqe2QqGZUmfcPZtrIyt" },
+      { title: "Pehle Bhi Main", artist: "Vishal Mishra • Animal", cover: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=100", trackId: "3yHyi9GskIX59t7Z1Ev994" }
+    ];
+
+    let mySavedNote = null;
+
+    const chatsData = {
+      rahul: {
+        name: "Rahul Raj",
+        avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+        status: "Active now",
+        messages: [
+          { sender: "sender", text: "Hello..", time: "10:40 AM" }
+        ]
+      },
+      yash: {
+        name: "Yash Dwivedi",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+        status: "Active 15m ago",
+        messages: [
+          { sender: "sender", text: "Bro, mockups ready ho gaye!", time: "Yesterday" }
+        ]
+      }
+    };
+
+    let activeChatKey = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      let userObj = null;
+      try {
+        userObj = JSON.parse(localStorage.getItem('tribezz_user_profile'));
+      } catch(e) {}
+      
+      const username = (userObj && userObj.username) || localStorage.getItem('user_handle') || 'saket_janghel_22';
+      const avatar = (userObj && userObj.avatar) || localStorage.getItem('user_avatar') || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150';
+      
+      document.getElementById('topAccountHandle').innerText = username.replace('@', '');
+      document.getElementById('myNoteAvatar').src = avatar;
+
+      renderSpotifySongList(fallbackSongsDB);
+    });
+
+    function renderSpotifySongList(songs) {
+      const container = document.getElementById('spotifyTrackResults');
+      container.innerHTML = '';
+
+      songs.forEach(song => {
+        const isSelected = (song.title === selectedSongData.title);
+        const row = document.createElement('div');
+        row.className = `song-item-row ${isSelected ? 'selected' : ''}`;
+        row.onclick = () => selectSpotifySong(song, row);
+        row.innerHTML = `
+          <div class="song-details-tag">
+            <img src="${song.cover}" class="song-cover-mini" alt="${song.title}" />
+            <div class="song-text-meta">
+              <h5>${song.title}</h5>
+              <span>${song.artist}</span>
+            </div>
+          </div>
+          <button type="button" class="song-play-btn-mini" onclick="event.stopPropagation(); previewSpotifyAudio('${song.title}', this)">
+            <i data-lucide="play" size="14"></i>
+          </button>
+        `;
+        container.appendChild(row);
+      });
+      lucide.createIcons();
+    }
+
+    let searchDebounceTimer = null;
+    async function searchSpotifyTracks(query) {
+      clearTimeout(searchDebounceTimer);
+      const clean = query.trim().toLowerCase();
+      if (!clean) {
+        renderSpotifySongList(fallbackSongsDB);
+        return;
+      }
+
+      searchDebounceTimer = setTimeout(async () => {
+        try {
+          const url = `https://${SPOTIFY_API_HOST}/search/?q=${encodeURIComponent(clean)}&type=multi&offset=0&limit=8&numberOfTopResults=3`;
+          const options = {
+            method: 'GET',
+            headers: {
+              'x-rapidapi-key': SPOTIFY_API_KEY,
+              'x-rapidapi-host': SPOTIFY_API_HOST,
+              'Content-Type': 'application/json'
+            }
+          };
+
+          const res = await fetch(url, options);
+          const data = await res.json();
+
+          if (data && data.tracks && data.tracks.items && data.tracks.items.length > 0) {
+            const parsed = data.tracks.items.map(item => {
+              const tr = item.data;
+              return {
+                title: tr.name,
+                artist: tr.artists.items.map(a => a.profile.name).join(', '),
+                cover: (tr.albumOfTrack && tr.albumOfTrack.coverArt && tr.albumOfTrack.coverArt.sources && tr.albumOfTrack.coverArt.sources[0]?.url) || "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100",
+                trackId: tr.id
+              };
+            });
+            renderSpotifySongList(parsed);
+            return;
+          }
+        } catch (e) {
+          console.warn("Spotify API Fallback Filter Active:", e);
+        }
+
+        const filtered = fallbackSongsDB.filter(s => s.title.toLowerCase().includes(clean) || s.artist.toLowerCase().includes(clean));
+        renderSpotifySongList(filtered.length > 0 ? filtered : fallbackSongsDB);
+      }, 400);
+    }
+
+    function selectSpotifySong(song, element) {
+      document.querySelectorAll('.song-item-row').forEach(el => el.classList.remove('selected'));
+      element.classList.add('selected');
+      selectedSongData = song;
+    }
+
+    function previewSpotifyAudio(title, btn) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.6);
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.8);
+      } catch (e) {}
+
+      btn.innerHTML = `<i data-lucide="check" size="14" color="#00f2fe"></i>`;
+      lucide.createIcons();
+      setTimeout(() => {
+        btn.innerHTML = `<i data-lucide="play" size="14"></i>`;
+        lucide.createIcons();
+      }, 1500);
+    }
+
+    function saveUserNote() {
+      const text = document.getElementById('noteThoughtInput').value.trim() || "Vibing in campus";
+      mySavedNote = { text, song: selectedSongData };
+
+      document.getElementById('myNoteText').innerText = `${text} 🎵 ${selectedSongData.title}`;
+      document.getElementById('myNoteBubbleTag').classList.add('playing');
+      document.getElementById('myNotePlusBtn').style.display = 'none';
+
+      closeNoteModal();
+    }
+
+    function handleMyNoteClick() {
+      if (!mySavedNote) {
+        openNoteModal();
+      } else {
+        playFriendNoteSong(`${mySavedNote.song.title} - ${mySavedNote.text}`);
+      }
+    }
+
+    function playFriendNoteSong(songLabel) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(659.25, audioCtx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.9);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.9);
+      } catch (e) {}
+
+      alert(`🎵 Now Streaming Spotify Track: ${songLabel}`);
+    }
+
+    function openNoteModal() {
+      document.getElementById('noteModalOverlay').classList.add('open');
+      lucide.createIcons();
+    }
+    function closeNoteModal() {
+      document.getElementById('noteModalOverlay').classList.remove('open');
+    }
+
+    function switchInboxTab(tab) {
+      const primaryBtn = document.getElementById('tabPrimaryBtn');
+      const reqBtn = document.getElementById('tabRequestsBtn');
+      const primaryBox = document.getElementById('primaryThreadsContainer');
+      const reqBox = document.getElementById('requestsThreadsContainer');
+
+      if (tab === 'primary') {
+        primaryBtn.classList.add('active');
+        reqBtn.classList.remove('active');
+        primaryBox.style.display = 'flex';
+        reqBox.style.display = 'none';
+      } else {
+        reqBtn.classList.add('active');
+        primaryBtn.classList.remove('active');
+        primaryBox.style.display = 'none';
+        reqBox.style.display = 'flex';
+      }
+    }
+
+    function acceptChatRequest(name, avatar, cardId) {
+      const card = document.getElementById(cardId);
+      if (card) card.remove();
+      const badge = document.getElementById('reqCountBadge');
+      let count = parseInt(badge.innerText) - 1;
+      badge.innerText = count > 0 ? count : '0';
+
+      const key = name.toLowerCase().split(' ')[0];
+      chatsData[key] = {
+        name: name,
+        avatar: avatar,
+        status: "Active now",
+        messages: [{ sender: "sender", text: "Hey! Thanks for accepting request!", time: "Just now" }]
+      };
+
+      const primaryBox = document.getElementById('primaryThreadsContainer');
+      const threadCard = document.createElement('div');
+      threadCard.className = 'thread-card';
+      threadCard.onclick = () => openChat(key);
+      threadCard.innerHTML = `
+        <img src="${avatar}" alt="${name}" class="thread-avatar" />
+        <div class="thread-details">
+          <div class="thread-name-line">
+            <h4>${name}</h4>
+            <span class="thread-time">Just now</span>
+          </div>
+          <div class="thread-preview-line">
+            <p class="thread-snippet">Request accepted • Tap to chat</p>
+            <span class="unread-pill-bubble"></span>
+          </div>
+        </div>
+      `;
+      primaryBox.prepend(threadCard);
+      switchInboxTab('primary');
+    }
+
+    function deleteChatRequest(cardId) {
+      const card = document.getElementById(cardId);
+      if (card) card.remove();
+      const badge = document.getElementById('reqCountBadge');
+      let count = parseInt(badge.innerText) - 1;
+      badge.innerText = count > 0 ? count : '0';
+    }
+
+    function openChat(userKey) {
+      activeChatKey = userKey;
+      const user = chatsData[userKey];
+
+      document.getElementById('chatName').innerText = user.name;
+      document.getElementById('chatAvatar').src = user.avatar;
+      document.getElementById('chatStatus').innerText = user.status;
+
+      renderMessages();
+      document.getElementById('chatRoom').classList.add('open');
+      lucide.createIcons();
+    }
+
+    function renderMessages() {
+      const container = document.getElementById('chatMessages');
+      container.innerHTML = '<div class="chat-date-separator">TODAY</div>';
+
+      const user = chatsData[activeChatKey];
+      user.messages.forEach(msg => {
+        const strip = document.createElement('div');
+        const isMe = (msg.sender === "me");
+        strip.className = `snap-msg-strip ${isMe ? 'me' : 'sender'}`;
+        const senderTitle = isMe ? "ME" : user.name.toUpperCase();
+
+        if (msg.isSticker) {
+          strip.innerHTML = `
+            <span class="snap-sender-tag">${senderTitle}</span>
+            <img src="${msg.img}" class="snap-sticker-img" alt="Sticker" />
+            <span class="snap-time-tag">${msg.time}</span>
+          `;
+        } else {
+          strip.innerHTML = `
+            <span class="snap-sender-tag">${senderTitle}</span>
+            <div class="snap-msg-body">${msg.text}</div>
+            <span class="snap-time-tag">${msg.time}</span>
+          `;
+        }
+        container.appendChild(strip);
+      });
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function closeChat() {
+      document.getElementById('chatRoom').classList.remove('open');
+      activeChatKey = null;
+    }
+
+    function handleTypingEvent(input) {
+      const addons = document.getElementById('inputAddons');
+      const sendBtn = document.getElementById('sendBtn');
+      if (input.value.trim().length > 0) {
+        addons.style.display = 'none';
+        sendBtn.style.display = 'block';
+      } else {
+        addons.style.display = 'flex';
+        sendBtn.style.display = 'none';
+      }
+    }
+
+    function dispatchMessage() {
+      const input = document.getElementById('chatInput');
+      const userText = input.value.trim();
+      if (!userText || !activeChatKey) return;
+
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      chatsData[activeChatKey].messages.push({
+        sender: "me",
+        text: userText,
+        time: timeStr
+      });
+
+      renderMessages();
+      input.value = '';
+      handleTypingEvent(input);
+
+      triggerAutoPeerReply(userText);
+    }
+
+    function triggerAutoPeerReply(incomingMsg) {
+      const peeker = document.getElementById('snapBitmojiPeeker');
+
+      setTimeout(() => {
+        peeker.classList.add('active');
+
+        setTimeout(() => {
+          peeker.classList.remove('active');
+
+          const replyText = generateContextualReply(incomingMsg);
+          const replyTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+          chatsData[activeChatKey].messages.push({
+            sender: "sender",
+            text: replyText,
+            time: replyTime
+          });
+
+          renderMessages();
+        }, 2000);
+
+      }, 1200);
+    }
+
+    function generateContextualReply(msg) {
+      const text = msg.toLowerCase().trim();
+      if (text.includes("hii") || text.includes("hi") || text.includes("hello") || text.includes("hey")) {
+        return "Hey bro! Kaise ho? ⚡";
+      } else if (text.includes("how are you") || text.includes("kaise ho")) {
+        return "Main ekdum badiya! Campus me hi hoon, aap batao? 😊";
+      } else if (text.includes("kya kar") || text.includes("what doing")) {
+        return "Bas lab assignment complete kar raha tha aur Tribezz check kar raha tha! 💻";
+      } else {
+        return "Haan bro, sahi bola! Main thodi der me connect karta hoon aapse 👍";
+      }
+    }
+
+    function sendStickerQuick() {
+      if (!activeChatKey) return;
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      chatsData[activeChatKey].messages.push({
+        sender: "me",
+        isSticker: true,
+        img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300",
+        time: timeStr
+      });
+      renderMessages();
+      triggerAutoPeerReply("what doing");
+    }
+
+    function handleEnterKey(e) {
+      if (e.key === 'Enter') dispatchMessage();
+    }
+  </script>
+</body>
+</html>

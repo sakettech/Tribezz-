@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Feedback - Tribezz</title>
+
+  <!-- Google Fonts & Lucide Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg-darkest: #04070d;
+      --bg-surface: #0a0f1d;
+      --bg-card: rgba(16, 24, 40, 0.85);
+      --primary-gradient: linear-gradient(135deg, #00f2fe 0%, #8b5cf6 50%, #f43f5e 100%);
+      --accent-cyan: #00f2fe;
+      --accent-pink: #f43f5e;
+      --accent-gold: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(139, 92, 246, 0.45);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+    body { background-color: #010307; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-main); }
+    .mobile-frame { width: 100%; max-width: 412px; height: 100vh; background-color: var(--bg-darkest); display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 25px 60px -15px rgba(0, 242, 254, 0.2), 0 0 0 1px var(--border-glass); }
+
+    /* Top Navbar */
+    .top-navbar { height: 60px; display: flex; align-items: center; padding: 0 16px; background: rgba(10, 15, 29, 0.94); backdrop-filter: blur(18px); z-index: 20; border-bottom: 1px solid var(--border-glass); gap: 12px; }
+    .back-btn { color: var(--text-main); background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.05); transition: 0.2s; }
+    .back-btn:active { transform: scale(0.9); }
+    .page-title { font-size: 17px; font-weight: 800; color: var(--text-main); }
+
+    /* Main Content */
+    .scroll-body { flex: 1; overflow-y: auto; padding: 20px 16px; scrollbar-width: none; }
+    .scroll-body::-webkit-scrollbar { display: none; }
+
+    .feedback-hero { text-align: center; margin-bottom: 24px; animation: fadeIn 0.4s ease; }
+    .feedback-hero i { color: var(--accent-cyan); filter: drop-shadow(0 0 10px rgba(0,242,254,0.6)); margin-bottom: 10px; }
+    .feedback-hero h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .feedback-hero p { font-size: 13px; color: var(--text-muted); line-height: 1.5; padding: 0 10px; }
+
+    /* Glass Card */
+    .glass-card { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 24px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: slideUp 0.4s ease; display: flex; flex-direction: column; align-items: center; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Star Rating */
+    .stars-container { display: flex; gap: 10px; margin-bottom: 16px; }
+    .star-icon { cursor: pointer; color: #334155; transition: all 0.2s ease; }
+    .star-icon.active { color: var(--accent-gold); filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6)); transform: scale(1.15); }
+    .star-icon.active i { fill: var(--accent-gold); }
+
+    /* Emoji Display */
+    .emoji-display { font-size: 48px; margin-bottom: 8px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .emoji-text { font-size: 14px; font-weight: 700; color: var(--accent-cyan); margin-bottom: 20px; min-height: 20px; }
+
+    /* Inputs */
+    .input-group { width: 100%; margin-bottom: 16px; }
+    .input-group label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: block; }
+    
+    .feedback-input { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 14px; padding: 14px 16px; color: #fff; font-size: 14px; font-weight: 600; outline: none; transition: 0.2s; font-family: inherit; margin-bottom: 4px; }
+    .feedback-textarea { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: 16px; padding: 16px; color: #fff; font-size: 13.5px; outline: none; resize: none; min-height: 100px; font-family: inherit; transition: 0.2s; }
+    
+    .feedback-input:focus, .feedback-textarea:focus { border-color: var(--accent-purple); background: rgba(255,255,255,0.06); box-shadow: 0 0 15px rgba(139, 92, 246, 0.2); }
+    .feedback-input::placeholder, .feedback-textarea::placeholder { color: #64748b; font-weight: 500; }
+
+    /* Submit Button */
+    .btn-submit { width: 100%; padding: 16px; background: var(--primary-gradient); border: none; border-radius: 14px; color: #fff; font-size: 14.5px; font-weight: 800; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: transform 0.15s; margin-top: 8px; }
+    .btn-submit:active { transform: scale(0.96); }
+    .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    /* Toast */
+    .toast-msg { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: var(--accent-green); color: #000; padding: 12px 24px; border-radius: 14px; font-size: 13.5px; font-weight: 800; z-index: 300; display: none; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); align-items: center; gap: 8px; }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-frame">
+    
+    <div class="toast-msg" id="toastMsg"><i data-lucide="check-circle"></i> <span>Feedback Sent!</span></div>
+
+    <!-- Header -->
+    <header class="top-navbar">
+      <button class="back-btn" onclick="location.replace('Profile.html')">
+        <i data-lucide="arrow-left" size="20"></i>
+      </button>
+      <h1 class="page-title">Share Feedback</h1>
+    </header>
+
+    <!-- Main Content -->
+    <div class="scroll-body">
+      
+      <div class="feedback-hero">
+        <i data-lucide="sparkles" size="42"></i>
+        <h2>How are we doing?</h2>
+        <p>Your feedback helps us make the Tribezz campus network better and more sustainable for everyone.</p>
+      </div>
+
+      <div class="glass-card">
+        
+        <!-- Interactive Emojis & Stars -->
+        <div class="emoji-display" id="emojiIcon">👋</div>
+        <div class="emoji-text" id="emojiLabel">Select a rating</div>
+
+        <div class="stars-container" id="starContainer">
+          <div class="star-icon" onclick="setRating(1)"><i data-lucide="star" size="32"></i></div>
+          <div class="star-icon" onclick="setRating(2)"><i data-lucide="star" size="32"></i></div>
+          <div class="star-icon" onclick="setRating(3)"><i data-lucide="star" size="32"></i></div>
+          <div class="star-icon" onclick="setRating(4)"><i data-lucide="star" size="32"></i></div>
+          <div class="star-icon" onclick="setRating(5)"><i data-lucide="star" size="32"></i></div>
+        </div>
+
+        <!-- NEW FULL NAME INPUT -->
+        <div class="input-group">
+          <label>Your Full Name</label>
+          <input type="text" id="feedbackName" class="feedback-input" placeholder="Enter your full name" />
+        </div>
+
+        <div class="input-group">
+          <label>Any suggestions or notes? (Optional)</label>
+          <textarea id="feedbackText" class="feedback-textarea" placeholder="Tell us what you love or what we can improve..."></textarea>
+        </div>
+
+        <button class="btn-submit" id="submitBtn" onclick="submitFeedback()">
+          Submit Feedback <i data-lucide="send" size="18"></i>
+        </button>
+        
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // Setup System User Info (Peeche background me tracking ke liye)
+    const activeUsername = localStorage.getItem('ecoActiveUser') || 'Guest';
+    
+    // Rating State
+    let currentRating = 0;
+    const ratingData = [
+      { emoji: '👋', text: 'Select a rating', color: 'var(--accent-cyan)' },
+      { emoji: '😡', text: 'Terrible', color: '#f43f5e' },
+      { emoji: '😟', text: 'Bad', color: '#f97316' },
+      { emoji: '😐', text: 'Okay', color: '#eab308' },
+      { emoji: '🙂', text: 'Good', color: '#00f2fe' },
+      { emoji: '😍', text: 'Excellent', color: '#10b981' }
+    ];
+
+    // Pre-fill Name automatically if user data exists in local DB
+    window.addEventListener('DOMContentLoaded', () => {
+      const db = JSON.parse(localStorage.getItem('ecoUsersDB')) || {};
+      if(activeUsername && db[activeUsername] && db[activeUsername].fullName) {
+        document.getElementById('feedbackName').value = db[activeUsername].fullName;
+      }
+    });
+
+    function setRating(rating) {
+      currentRating = rating;
+      const stars = document.querySelectorAll('.star-icon');
+      
+      // Update Stars
+      stars.forEach((star, index) => {
+        if (index < rating) {
+          star.classList.add('active');
+        } else {
+          star.classList.remove('active');
+        }
+      });
+
+      // Update Emoji & Text with animation
+      const emojiDisplay = document.getElementById('emojiIcon');
+      const emojiLabel = document.getElementById('emojiLabel');
+      
+      emojiDisplay.style.transform = 'scale(0.5) rotate(-10deg)';
+      
+      setTimeout(() => {
+        emojiDisplay.innerText = ratingData[rating].emoji;
+        emojiLabel.innerText = ratingData[rating].text;
+        emojiLabel.style.color = ratingData[rating].color;
+        emojiDisplay.style.transform = 'scale(1.2) rotate(5deg)';
+        
+        setTimeout(() => {
+          emojiDisplay.style.transform = 'scale(1) rotate(0deg)';
+        }, 150);
+      }, 150);
+    }
+
+    // Submit Feedback to Google Sheets Webhook
+    async function submitFeedback() {
+      if (currentRating === 0) {
+        alert("Please select a star rating first!");
+        return;
+      }
+
+      const fullName = document.getElementById('feedbackName').value.trim();
+      if (!fullName) {
+        alert("Please enter your full name!");
+        return;
+      }
+
+      const feedbackNote = document.getElementById('feedbackText').value.trim();
+      const btn = document.getElementById('submitBtn');
+      
+      btn.innerHTML = 'Submitting... <i data-lucide="loader" class="spin"></i>';
+      btn.disabled = true;
+
+      // Yahan hum Full Name aur Bracket mein Username dono bhej rahe hain taaki sheet mein ekdum clear show ho
+      const formattedName = `${fullName} (@${activeUsername})`;
+
+      const payload = {
+        type: "feedback",
+        username: formattedName, 
+        rating: currentRating,
+        ratingText: ratingData[currentRating].text,
+        notes: feedbackNote || "No text provided",
+        timestamp: new Date().toLocaleString()
+      };
+
+      try {
+        // YAHAN APNA GOOGLE SHEET KA WEB APP URL PASTE KAREIN
+        const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyhfyXHus59wEK8biLQ1cg-A4HpDGIPMH5rxkpjE7650E299er-5LPIAX0Bx_Em7E0o/exec";
+        
+        await fetch(GOOGLE_SHEET_URL, {
+          method: "POST", 
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        // Show Success Toast
+        const toast = document.getElementById('toastMsg');
+        toast.style.display = "flex";
+        
+        // Reset Form
+        currentRating = 0;
+        setRating(0);
+        document.getElementById('feedbackText').value = '';
+        
+        setTimeout(() => { 
+          toast.style.display = "none"; 
+          location.replace('Profile.html'); 
+        }, 2000);
+
+      } catch(e) {
+        console.error("Feedback submission error", e);
+        alert("Something went wrong. Please try again.");
+      } finally {
+        btn.innerHTML = 'Submit Feedback <i data-lucide="send" size="18"></i>';
+        btn.disabled = false;
+        lucide.createIcons();
+      }
+    }
+  </script>
+</body>
+</html>

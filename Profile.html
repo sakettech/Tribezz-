@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Tribezz Profile</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg-darkest: #04070d;
+      --bg-surface: #0a0f1d;
+      --bg-card: rgba(16, 24, 40, 0.85);
+      --primary-gradient: linear-gradient(135deg, #00f2fe 0%, #8b5cf6 50%, #f43f5e 100%);
+      --accent-cyan: #00f2fe;
+      --accent-pink: #f43f5e;
+      --accent-purple: #8b5cf6;
+      --accent-green: #10b981;
+      --accent-gold: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(139, 92, 246, 0.45);
+    }
+
+    body.light-theme {
+      --bg-darkest: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-card: rgba(241, 245, 249, 0.95);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-glass: rgba(0, 0, 0, 0.08);
+    }
+
+    body.read-mode {
+      --bg-darkest: #181512;
+      --bg-surface: #24201a;
+      --bg-card: rgba(40, 35, 30, 0.92);
+      --text-main: #ebdcc9;
+      --text-muted: #b5a48f;
+      filter: sepia(0.25);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background-color: #010307;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      transition: background-color 0.3s;
+    }
+
+    .mobile-frame {
+      width: 100%;
+      max-width: 412px;
+      height: 100vh;
+      background-color: var(--bg-darkest);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 60px -15px rgba(0, 242, 254, 0.2), 0 0 0 1px var(--border-glass);
+    }
+
+    /* Top Navbar */
+    .profile-top-navbar {
+      height: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      background: rgba(10, 15, 29, 0.94);
+      backdrop-filter: blur(18px);
+      z-index: 20;
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .profile-brand-clickable {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 14px;
+      transition: background 0.2s;
+    }
+    .profile-brand-clickable:active { background: rgba(255, 255, 255, 0.06); }
+
+    .brand-title-badge {
+      font-family: 'Outfit', sans-serif;
+      font-size: 19px;
+      font-weight: 900;
+      letter-spacing: -0.4px;
+      background: linear-gradient(120deg, #ffffff 10%, #00f2fe 50%, #8b5cf6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-user-tag {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-left: 2px;
+    }
+
+    .profile-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-icon-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .header-icon-btn:active { transform: scale(0.9); }
+
+    /* Scrollable Profile Canvas */
+    .profile-scroll-body {
+      flex: 1;
+      background-color: var(--bg-surface);
+      overflow-y: auto;
+      padding: 16px 14px 105px 14px;
+      scrollbar-width: none;
+    }
+    .profile-scroll-body::-webkit-scrollbar { display: none; }
+
+    /* Profile Main Summary Card */
+    .profile-center-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      backdrop-filter: blur(14px);
+      border-radius: 26px;
+      padding: 22px 18px 18px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .profile-avatar-center {
+      position: relative;
+      margin-bottom: 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* DYNAMIC AVATAR RING (STYLED VIA JS BASED ON EQUIPPED FRAME) */
+    .profile-dp-ring {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s;
+    }
+
+    .profile-dp-ring img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--bg-card);
+      z-index: 2;
+    }
+
+    /* Dynamic Badges (LIVE, PRO, +) from Equipped Frame */
+    .frame-badge-overlay {
+      position: absolute;
+      bottom: -4px;
+      z-index: 5;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 2px solid var(--bg-card);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Edit Camera Icon */
+    .badge-icon-tag {
+      position: absolute;
+      top: 0px;
+      right: -2px;
+      width: 24px;
+      height: 24px;
+      background: var(--accent-green);
+      border: 2px solid var(--bg-surface);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      z-index: 10;
+    }
+
+    .full-name {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dept-tag {
+      font-size: 12px;
+      color: var(--accent-cyan);
+      font-weight: 600;
+      margin-top: 3px;
+    }
+
+    .bio-caption {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin: 8px auto 16px auto;
+      max-width: 320px;
+    }
+
+    .metrics-center-row {
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 12px 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass);
+      border-radius: 18px;
+      margin-bottom: 16px;
+    }
+
+    .metric-box {
+      text-align: center;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .metric-val {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: block;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .metric-lbl {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .metric-divider {
+      width: 1px;
+      height: 24px;
+      background: var(--border-glass);
+    }
+
+    .profile-actions-bar {
+      width: 100%;
+      display: flex;
+      gap: 10px;
+    }
+
+    .p-btn {
+      flex: 1;
+      padding: 9px 0;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .p-btn:active { transform: scale(0.97); }
+
+    .p-btn.primary {
+      background: var(--primary-gradient);
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+    }
+
+    .p-btn.secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-glass);
+      color: var(--text-main);
+    }
+
+    /* Highlights Section */
+    .highlights-scroll-bar {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+      scrollbar-width: none;
+    }
+    .highlights-scroll-bar::-webkit-scrollbar { display: none; }
+
+    .highlight-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .highlight-ring {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      padding: 2px;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .highlight-ring img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .highlight-title {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* Sub-Tabs */
+    .profile-tabs-header {
+      display: flex;
+      justify-content: space-around;
+      border-bottom: 1px solid var(--border-glass);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .tab-nav-item {
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px 16px;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .tab-nav-item.active {
+      color: #ffffff;
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid var(--border-focus);
+    }
+
+    .tab-view-panel { display: none; }
+    .tab-view-panel.active {
+      display: block;
+      animation: fadeInTab 0.2s ease-in-out;
+    }
+
+    @keyframes fadeInTab {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile-grid-3x3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .p-grid-tile {
+      aspect-ratio: 1 / 1;
+      background: #111827;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .p-grid-tile img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .p-grid-tile:hover img { transform: scale(1.06); }
+
+    .swaps-items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .swap-card-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 18px;
+      padding: 10px 12px;
+    }
+
+    .swap-thumb {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    .swap-info { flex: 1; }
+    .swap-info h4 { font-size: 13.5px; color: var(--text-main); font-weight: 700; }
+    .swap-info p { font-size: 11px; color: var(--text-muted); }
+    .swap-status-pill {
+      font-size: 10.5px;
+      font-weight: 700;
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      padding: 4px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* ==================== FULL-SCREEN INSTAGRAM-STYLE SETTINGS ==================== */
+    .full-settings-page {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg-darkest);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+    .full-settings-page.open { transform: translateX(0); }
+
+    .settings-nav-bar {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-glass);
+      background: rgba(14, 20, 32, 0.95);
+      backdrop-filter: blur(16px);
+    }
+    .settings-nav-bar h2 {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .settings-scroll-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 16px 40px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      scrollbar-width: none;
+    }
+
+    .settings-search-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .settings-search-box input {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+    }
+
+    .settings-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .settings-group-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 4px;
+      padding-left: 4px;
+    }
+
+    .settings-menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .settings-menu-item:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .item-left-cluster {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .item-left-cluster h4 {
+      font-size: 13.5px;
+      color: var(--text-main);
+      font-weight: 700;
+    }
+    .item-left-cluster p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    /* Switch Component */
+    .switch-ui {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+    .switch-ui input { opacity: 0; width: 0; height: 0; }
+    .slider-ui {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.15);
+      transition: .3s;
+      border-radius: 24px;
+    }
+    .slider-ui:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider-ui {
+      background-color: var(--accent-purple);
+    }
+    input:checked + .slider-ui:before {
+      transform: translateX(20px);
+    }
+
+    /* ==================== CENTER GLASS POPUPS ==================== */
+    .center-popup-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(14px);
+      z-index: 120;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .center-popup-overlay.show { display: flex; animation: popInScale 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes popInScale {
+      from { opacity: 0; transform: scale(0.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .center-dialog-card {
+      width: 100%;
+      max-width: 350px;
+      background: #0d1527;
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      border-radius: 26px;
+      padding: 22px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(139, 92, 246, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-glass);
+    }
+    .dialog-header h3 { font-size: 16.5px; font-weight: 800; color: var(--text-main); }
+
+    .dialog-body {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 420px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .dialog-action-btn {
+      width: 100%;
+      height: 46px;
+      background: var(--primary-gradient);
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.15s;
+    }
+    .dialog-action-btn:active { transform: scale(0.97); }
+
+    .form-unit { display: flex; flex-direction: column; gap: 5px; }
+    .form-unit label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .form-input-shell {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      padding: 0 12px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+    }
+    .form-input-shell input {
+      width: 100%;
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+    }
+
+    /* Floating Capsule Dock */
+    .capsule-dock-wrapper {
+      position: absolute;
+      bottom: 18px;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+      pointer-events: none;
+      padding: 0 16px;
+    }
+
+    .glass-capsule-dock {
+      pointer-events: auto;
+      width: 100%;
+      max-width: 370px;
+      height: 64px;
+      background: rgba(12, 18, 33, 0.72);
+      backdrop-filter: blur(28px) saturate(210%);
+      -webkit-backdrop-filter: blur(28px) saturate(210%);
+      border: 1.2px solid rgba(255, 255, 255, 0.12);
+      border-top: 1.2px solid rgba(255, 255, 255, 0.22);
+      border-radius: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.85), 0 0 24px -4px rgba(0, 242, 254, 0.12);
+    }
+
+    .capsule-tab-item {
+      background: transparent;
+      border: none;
+      outline: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 26px;
+      transition: all 0.25s;
+      flex: 1;
+    }
+    .capsule-tab-item.active {
+      color: #ffffff;
+      background: linear-gradient(180deg, rgba(0, 242, 254, 0.16) 0%, rgba(139, 92, 246, 0.08) 100%);
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      box-shadow: 0 4px 16px -2px rgba(0, 242, 254, 0.35);
+    }
+    .capsule-tab-item.active i {
+      color: var(--accent-cyan);
+      filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.85));
+    }
+    .capsule-tab-item span { font-size: 10px; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-frame">
+    
+    <!-- TOP NAVBAR -->
+    <header class="profile-top-navbar">
+      <div class="profile-brand-clickable" onclick="openCenterPopup('accountPopup')" title="Switch Identity">
+        <span class="brand-title-badge">Tribezz</span>
+        <span class="header-user-tag">• @saket_janghel_22</span>
+        <i data-lucide="chevron-down" size="14" color="#94a3b8"></i>
+      </div>
+
+      <div class="profile-header-actions">
+        <button type="button" class="header-icon-btn" onclick="openCenterPopup('editProfilePopup')" title="Edit Profile">
+          <i data-lucide="plus-square" size="20"></i>
+        </button>
+        <!-- 3 LINES OPENS FULL SCREEN INSTAGRAM SETTINGS -->
+        <button type="button" class="header-icon-btn" onclick="openFullSettingsPage()" title="Settings & Activity">
+          <i data-lucide="menu" size="22"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN SCROLLABLE PROFILE -->
+    <main class="profile-scroll-body">
+      
+      <section class="profile-center-card">
+        <!-- DYNAMIC AVATAR WITH EQUIPPED FRAME -->
+        <div class="profile-avatar-center" onclick="openCenterPopup('editProfilePopup')">
+          <div class="profile-dp-ring" id="mainAvatarRing">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=250" alt="Avatar" id="displayProfilePic" />
+          </div>
+          <!-- Frame Custom Badge (LIVE, PRO, +) is injected here -->
+          <div id="frameBadgeContainer"></div>
+          <!-- Edit/Camera Icon Overlay -->
+          <div class="badge-icon-tag"><i data-lucide="camera" size="12"></i></div>
+        </div>
+
+        <h3 class="full-name" id="displayName">Saket Janghel <span class="verified-badge" style="color:var(--accent-cyan);">✓</span></h3>
+        <p class="dept-tag" id="displayDept">BCA AI/ML • Ethical Hacker</p>
+        <p class="bio-caption" id="displayBio">Eco-Tech innovator 🚀 Swapping open-source hardware & turning campus waste into clean assets 🌱</p>
+
+        <div class="metrics-center-row">
+          <div class="metric-box">
+            <span class="metric-val" id="postCount">24</span>
+            <span class="metric-lbl">Posts</span>
+          </div>
+          <div class="metric-divider"></div>
+          <div class="metric-box">
+            <span class="metric-val" id="followingCount">184</span>
+            <span class="metric-lbl">Following</span>
+          </div>
+          <div class="metric-divider"></div>
+          <div class="metric-box">
+            <span class="metric-val" id="ecoPointsCount">1.4K</span>
+            <span class="metric-lbl">EcoPoints</span>
+          </div>
+        </div>
+
+        <div class="profile-actions-bar">
+          <button type="button" class="p-btn primary" onclick="openCenterPopup('editProfilePopup')">
+            <i data-lucide="edit-3" size="14"></i> Edit Profile
+          </button>
+          <button type="button" class="p-btn secondary" onclick="shareProfile()">
+            <i data-lucide="share-2" size="14"></i> Share Profile
+          </button>
+        </div>
+      </section>
+
+      <!-- Highlights -->
+      <div class="highlights-scroll-bar">
+        <div class="highlight-unit">
+          <div class="highlight-ring"><img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=150" alt="Drive" /></div>
+          <span class="highlight-title">Tree Drive</span>
+        </div>
+        <div class="highlight-unit">
+          <div class="highlight-ring"><img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=150" alt="Books" /></div>
+          <span class="highlight-title">Book Swaps</span>
+        </div>
+        <div class="highlight-unit">
+          <div class="highlight-ring"><img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=150" alt="Eco" /></div>
+          <span class="highlight-title">Upcycling</span>
+        </div>
+        <div class="highlight-unit">
+          <div class="highlight-ring"><img src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=150" alt="Clean" /></div>
+          <span class="highlight-title">Campus 26</span>
+        </div>
+      </div>
+
+      <!-- Sub-Tabs -->
+      <div class="profile-tabs-header">
+        <div class="tab-nav-item active" onclick="switchProfileTab('posts', this)">
+          <i data-lucide="grid" size="16"></i> Posts
+        </div>
+        <div class="tab-nav-item" onclick="switchProfileTab('swaps', this)">
+          <i data-lucide="repeat" size="16"></i> My Swaps
+        </div>
+        <div class="tab-nav-item" onclick="switchProfileTab('saved', this)">
+          <i data-lucide="bookmark" size="16"></i> Saved
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-view-panel active" id="panel-posts">
+        <div class="profile-grid-3x3">
+          <div class="p-grid-tile" onclick="location.replace('index.html')"><img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300" alt="p1" /></div>
+          <div class="p-grid-tile" onclick="location.replace('index.html')"><img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=300" alt="p2" /></div>
+          <div class="p-grid-tile" onclick="location.replace('Reels.html')"><img src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=300" alt="p3" /></div>
+          <div class="p-grid-tile" onclick="location.replace('index.html')"><img src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=300" alt="p4" /></div>
+          <div class="p-grid-tile" onclick="location.replace('Reels.html')"><img src="https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=300" alt="p5" /></div>
+          <div class="p-grid-tile" onclick="location.replace('index.html')"><img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=300" alt="p6" /></div>
+        </div>
+      </div>
+
+      <div class="tab-view-panel" id="panel-swaps">
+        <div style="background:var(--bg-card); border:1px solid var(--border-glass); border-radius:18px; padding:12px; display:flex; align-items:center; gap:12px;">
+          <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=150" style="width:50px; height:50px; border-radius:12px; object-fit:cover;" />
+          <div style="flex:1;">
+            <h4 style="font-size:13.5px; color:var(--text-main); font-weight:700;">AI &amp; Discrete Math Books</h4>
+            <p style="font-size:11px; color:var(--text-muted);">Swapped with Rahul Raj • Tech Block</p>
+          </div>
+          <span style="font-size:10px; font-weight:700; color:var(--accent-green); background:rgba(16,185,129,0.15); padding:4px 8px; border-radius:10px;">Completed</span>
+        </div>
+      </div>
+
+      <div class="tab-view-panel" id="panel-saved">
+        <div class="profile-grid-3x3">
+          <div class="p-grid-tile"><img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300" alt="s1" /></div>
+          <div class="p-grid-tile"><img src="https://images.unsplash.com/photo-1511497584788-87676104235f?w=300" alt="s2" /></div>
+          <div class="p-grid-tile"><img src="https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=300" alt="s3" /></div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ==================== FULL-SCREEN INSTAGRAM STYLE SETTINGS ==================== -->
+    <div class="full-settings-page" id="fullSettingsPage">
+      
+      <div class="settings-nav-bar">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <i data-lucide="arrow-left" size="22" style="cursor:pointer; color:var(--text-main);" onclick="closeFullSettingsPage()"></i>
+          <h2>Settings and Activity</h2>
+        </div>
+      </div>
+
+      <div class="settings-scroll-content">
+        
+        <div class="settings-search-box">
+          <i data-lucide="search" size="16" color="#94a3b8"></i>
+          <input type="text" placeholder="Search settings, permissions & tools..." />
+        </div>
+
+        <!-- ACCOUNT & PRIVACY -->
+        <div class="settings-group">
+          <div class="settings-group-label">Account & Privacy</div>
+
+          <div class="settings-menu-item">
+            <div class="item-left-cluster">
+              <i data-lucide="lock" color="#8b5cf6"></i>
+              <div>
+                <h4>Private Account</h4>
+                <p>Only verified campus students can view posts</p>
+              </div>
+            </div>
+            <label class="switch-ui">
+              <input type="checkbox" onchange="togglePrivacy(this)" />
+              <span class="slider-ui"></span>
+            </label>
+          </div>
+
+          <div class="settings-menu-item" onclick="openCenterPopup('blockedPopup')">
+            <div class="item-left-cluster">
+              <i data-lucide="user-x" color="#f43f5e"></i>
+              <div>
+                <h4>Blocked Accounts</h4>
+                <p>Manage users blocked from trades and chats</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" size="16" color="#64748b"></i>
+          </div>
+
+          <div class="settings-menu-item" onclick="openCenterPopup('statusPopup')">
+            <div class="item-left-cluster">
+              <i data-lucide="shield-check" color="#10b981"></i>
+              <div>
+                <h4>Account Status</h4>
+                <p>Campus Community Guidelines standing</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" size="16" color="#64748b"></i>
+          </div>
+        </div>
+
+        <!-- DATA USAGE & MEDIA QUALITY -->
+        <div class="settings-group">
+          <div class="settings-group-label">Data Usage & Media Quality</div>
+
+          <div class="settings-menu-item">
+            <div class="item-left-cluster">
+              <i data-lucide="sparkles" color="#00f2fe"></i>
+              <div>
+                <h4>Upload at Highest Quality</h4>
+                <p>Always upload high-resolution photos and reels</p>
+              </div>
+            </div>
+            <label class="switch-ui">
+              <input type="checkbox" checked />
+              <span class="slider-ui"></span>
+            </label>
+          </div>
+
+          <div class="settings-menu-item">
+            <div class="item-left-cluster">
+              <i data-lucide="wifi" color="#f59e0b"></i>
+              <div>
+                <h4>Use Less Cellular Data</h4>
+                <p>Reduce bandwidth on mobile networks</p>
+              </div>
+            </div>
+            <label class="switch-ui">
+              <input type="checkbox" />
+              <span class="slider-ui"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- ACCESSIBILITY & DISPLAY -->
+        <div class="settings-group">
+          <div class="settings-group-label">Accessibility & Display</div>
+
+          <div class="settings-menu-item">
+            <div class="item-left-cluster">
+              <i data-lucide="sun" color="#f59e0b"></i>
+              <div>
+                <h4>Light Mode</h4>
+                <p>Switch between dark and light appearance</p>
+              </div>
+            </div>
+            <label class="switch-ui">
+              <input type="checkbox" id="lightModeToggle" onchange="toggleLightMode(this)" />
+              <span class="slider-ui"></span>
+            </label>
+          </div>
+
+          <div class="settings-menu-item">
+            <div class="item-left-cluster">
+              <i data-lucide="book-open" color="#10b981"></i>
+              <div>
+                <h4>Eye-Care Read Mode</h4>
+                <p>Warm ambient tone for long study sessions</p>
+              </div>
+            </div>
+            <label class="switch-ui">
+              <input type="checkbox" id="readModeToggle" onchange="toggleReadMode(this)" />
+              <span class="slider-ui"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- LANGUAGE & SOUNDS -->
+        <div class="settings-group">
+          <div class="settings-group-label">Language & Sounds</div>
+
+          <div class="settings-menu-item" onclick="changeLanguagePrompt()">
+            <div class="item-left-cluster">
+              <i data-lucide="globe" color="#8b5cf6"></i>
+              <div>
+                <h4>App Language</h4>
+                <p id="currLangTxt">English (US) / Hindi Support</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" size="16" color="#64748b"></i>
+          </div>
+
+          <div class="settings-menu-item">
+            <div class="item-left-cluster">
+              <i data-lucide="volume-2" color="#00f2fe"></i>
+              <div>
+                <h4>In-App Sound Effects</h4>
+                <p>Play haptic audio on barter scans & messages</p>
+              </div>
+            </div>
+            <label class="switch-ui">
+              <input type="checkbox" checked />
+              <span class="slider-ui"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- CUSTOMIZATION / AVATAR FRAMES -->
+        <div class="settings-group">
+          <div class="settings-group-label">Customization</div>
+          <!-- Dedicated Frame Page Link -->
+          <div class="settings-menu-item" onclick="location.replace('Frames.html')">
+            <div class="item-left-cluster">
+              <i data-lucide="aperture" color="#f59e0b"></i>
+              <div>
+                <h4>Profile Avatar Frames</h4>
+                <p>Equip custom neon rings & badges</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" size="16" color="#64748b"></i>
+          </div>
+        </div>
+
+        <!-- DEVICE PERMISSIONS -->
+        <div class="settings-group">
+          <div class="settings-group-label">Privacy & Device</div>
+          
+          <div class="settings-menu-item" onclick="openCenterPopup('permissionsPopup')">
+            <div class="item-left-cluster">
+              <i data-lucide="shield" color="#10b981"></i>
+              <div>
+                <h4>Device Permissions</h4>
+                <p>Camera, Mic, Storage & Location access</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" size="16" color="#64748b"></i>
+          </div>
+        </div>
+
+        <!-- TIME MANAGEMENT & ACTIVITY -->
+        <div class="settings-group">
+          <div class="settings-group-label">Time Management & Activity</div>
+
+          <div class="settings-menu-item" onclick="openCenterPopup('timePopup')">
+            <div class="item-left-cluster">
+              <i data-lucide="clock" color="#f43f5e"></i>
+              <div>
+                <h4>Time Spent & Daily Limits</h4>
+                <p>Set daily study limits and break reminders</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" size="16" color="#64748b"></i>
+          </div>
+
+          <div class="settings-menu-item" onclick="openCenterPopup('activityPopup')">
+            <div class="item-left-cluster">
+              <i data-lucide="activity" color="#10b981"></i>
+              <div>
+                <h4>Your Activity & Swaps</h4>
+                <p>Review total physical handshakes & items swapped</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" size="16" color="#64748b"></i>
+          </div>
+        </div>
+
+        <!-- REWARDS & MISSIONS -->
+        <div class="settings-group">
+          <div class="settings-group-label">Rewards & Missions</div>
+          <div class="settings-menu-item" onclick="location.replace('Rewards.html')">
+            <div class="item-left-cluster">
+              <i data-lucide="gift" color="#f59e0b"></i>
+              <div>
+                <h4>Campus Missions & EcoPoints</h4>
+                <p>Redeem canteen coupons & zero-waste badges</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" size="16" color="#64748b"></i>
+          </div>
+        </div>
+
+        <!-- MORE -->
+        <div class="settings-group">
+          <div class="settings-group-label">More</div>
+
+          <!-- NEW FEEDBACK OPTION -->
+          <div class="settings-menu-item" onclick="location.replace('Feedback.html')">
+            <div class="item-left-cluster">
+              <div style="background:rgba(0, 242, 254, 0.15); padding:6px; border-radius:8px;">
+                <i data-lucide="message-square" color="#00f2fe" size="18"></i>
+              </div>
+              <div>
+                <h4 style="font-size:13.5px; color:var(--text-main); font-weight:700;">Share Feedback</h4>
+                <p style="font-size:11px; color:var(--text-muted); margin-top:1px;">Rate your experience & give suggestions</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" size="16" color="#64748b"></i>
+          </div>
+
+          <div class="settings-menu-item" onclick="openCenterPopup('aboutPopup')">
+            <div class="item-left-cluster">
+              <div style="background:rgba(139, 92, 246, 0.15); padding:6px; border-radius:8px;">
+                <i data-lucide="info" color="#8b5cf6" size="18"></i>
+              </div>
+              <div>
+                <h4 style="font-size:13.5px; color:var(--text-main); font-weight:700;">About Tribezz (EcoFeed)</h4>
+                <p style="font-size:11px; color:var(--text-muted); margin-top:1px;">Version 2.4.0 • Built for Campuses</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" size="16" color="#64748b"></i>
+          </div>
+
+          <div class="settings-menu-item" style="color:var(--accent-pink);" onclick="confirmLogout()">
+            <div class="item-left-cluster">
+              <div style="background:rgba(244, 63, 94, 0.15); padding:6px; border-radius:8px;">
+                <i data-lucide="log-out" color="#f43f5e" size="18"></i>
+              </div>
+              <div>
+                <h4 style="font-size:13.5px; color:#f43f5e; font-weight:700;">Log Out</h4>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" size="16" color="#64748b"></i>
+          </div>
+        </div>
+
+        <!-- MORE -->
+        <div class="settings-group">
+          <div class="settings-group-label">More</div>
+
+          <div class="settings-menu-item" onclick="openCenterPopup('aboutPopup')">
+            <div class="item-left-cluster">
+              <i data-lucide="info" color="#8b5cf6"></i>
+              <div>
+                <h4>About Tribezz (EcoFeed)</h4>
+                <p>Version 2.4.0 • Built for Sustainable Campuses</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" size="16" color="#64748b"></i>
+          </div>
+
+          <div class="settings-menu-item" style="color:var(--accent-pink);" onclick="confirmLogout()">
+            <div class="item-left-cluster">
+              <i data-lucide="log-out" color="#f43f5e"></i>
+              <h4 style="color:#f43f5e;">Log Out</h4>
+            </div>
+            <i data-lucide="chevron-right" size="16" color="#64748b"></i>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    
+
+    <!-- ==================== CENTER GLASS POPUPS ==================== -->
+
+    <!-- DEVICE PERMISSIONS POPUP -->
+    <div class="center-popup-overlay" id="permissionsPopup" onclick="closePopupOnBackdrop(event, 'permissionsPopup')">
+      <div class="center-dialog-card" onclick="event.stopPropagation()">
+        <div class="dialog-header">
+          <h3>Device Permissions</h3>
+          <i data-lucide="x" size="18" style="cursor:pointer; color:var(--text-main);" onclick="closeCenterPopup('permissionsPopup')"></i>
+        </div>
+        <div class="dialog-body" style="gap:8px;">
+          
+          <div class="settings-menu-item" style="padding:10px; background:rgba(255,255,255,0.03); border-radius:12px;">
+            <div class="item-left-cluster">
+              <div style="background:rgba(0, 242, 254, 0.15); padding:6px; border-radius:8px;">
+                <i data-lucide="camera" color="#00f2fe" size="18"></i>
+              </div>
+              <div>
+                <h4 style="font-size:13px; color:var(--text-main);">Camera Access</h4>
+                <p style="font-size:10px; color:var(--text-muted);">QR Handshake verification</p>
+              </div>
+            </div>
+            <label class="switch-ui"><input type="checkbox" checked><span class="slider-ui"></span></label>
+          </div>
+
+          <div class="settings-menu-item" style="padding:10px; background:rgba(255,255,255,0.03); border-radius:12px;">
+            <div class="item-left-cluster">
+              <div style="background:rgba(139, 92, 246, 0.15); padding:6px; border-radius:8px;">
+                <i data-lucide="mic" color="#8b5cf6" size="18"></i>
+              </div>
+              <div>
+                <h4 style="font-size:13px; color:var(--text-main);">Microphone</h4>
+                <p style="font-size:10px; color:var(--text-muted);">Voice Notes in DMs</p>
+              </div>
+            </div>
+            <label class="switch-ui"><input type="checkbox" checked><span class="slider-ui"></span></label>
+          </div>
+
+          <div class="settings-menu-item" style="padding:10px; background:rgba(255,255,255,0.03); border-radius:12px;">
+            <div class="item-left-cluster">
+              <div style="background:rgba(245, 158, 11, 0.15); padding:6px; border-radius:8px;">
+                <i data-lucide="folder-open" color="#f59e0b" size="18"></i>
+              </div>
+              <div>
+                <h4 style="font-size:13px; color:var(--text-main);">File Manager</h4>
+                <p style="font-size:10px; color:var(--text-muted);">Upload images & posts</p>
+              </div>
+            </div>
+            <label class="switch-ui"><input type="checkbox" checked><span class="slider-ui"></span></label>
+          </div>
+
+          <div class="settings-menu-item" style="padding:10px; background:rgba(255,255,255,0.03); border-radius:12px;">
+            <div class="item-left-cluster">
+              <div style="background:rgba(16, 185, 129, 0.15); padding:6px; border-radius:8px;">
+                <i data-lucide="map-pin" color="#10b981" size="18"></i>
+              </div>
+              <div>
+                <h4 style="font-size:13px; color:var(--text-main);">Campus Geofence</h4>
+                <p style="font-size:10px; color:var(--text-muted);">Hyperlocal boundary map</p>
+              </div>
+            </div>
+            <label class="switch-ui"><input type="checkbox" checked><span class="slider-ui"></span></label>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- EDIT PROFILE CENTER POPUP -->
+    <div class="center-popup-overlay" id="editProfilePopup" onclick="closePopupOnBackdrop(event, 'editProfilePopup')">
+      <div class="center-dialog-card" onclick="event.stopPropagation()">
+        <div class="dialog-header">
+          <h3>Edit Profile</h3>
+          <i data-lucide="x" size="18" style="cursor:pointer; color:var(--text-main);" onclick="closeCenterPopup('editProfilePopup')"></i>
+        </div>
+        <div class="dialog-body">
+          
+          <div style="display:flex; justify-content:center; margin-bottom:10px;">
+            <div class="profile-dp-ring" style="width:70px; height:70px;" onclick="document.getElementById('fileInput').click()">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=250" id="previewImg" alt="Upload" />
+              <div class="badge-icon-tag" style="background:var(--accent-purple); width:20px; height:20px; right:0;"><i data-lucide="camera" size="10"></i></div>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)" />
+          </div>
+
+          <div class="form-unit">
+            <label>Full Name</label>
+            <div class="form-input-shell"><input type="text" id="editNameInput" value="Saket Janghel" /></div>
+          </div>
+          <div class="form-unit">
+            <label>Department / Branch</label>
+            <div class="form-input-shell"><input type="text" id="editDeptInput" value="BCA AI/ML • Ethical Hacker" /></div>
+          </div>
+          <div class="form-unit">
+            <label>Bio</label>
+            <div class="form-input-shell"><input type="text" id="editBioInput" value="Eco-Tech innovator 🚀 Swapping open-source hardware 🌱" /></div>
+          </div>
+          <button type="button" class="dialog-action-btn" onclick="saveProfileChanges()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT SWITCHER CENTER POPUP -->
+    <div class="center-popup-overlay" id="accountPopup" onclick="closePopupOnBackdrop(event, 'accountPopup')">
+      <div class="center-dialog-card" onclick="event.stopPropagation()">
+        <div class="dialog-header">
+          <h3>Switch Account</h3>
+          <i data-lucide="x" size="18" style="cursor:pointer; color:var(--text-main);" onclick="closeCenterPopup('accountPopup')"></i>
+        </div>
+        <div class="dialog-body" id="accountsListContainer">
+          
+          <div style="display:flex; align-items:center; gap:10px; padding:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border-focus); border-radius:14px; cursor:pointer;">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" style="width:38px; height:38px; border-radius:50%; object-fit:cover;" />
+            <div style="flex:1;">
+              <h4 style="font-size:13px; color:var(--text-main);">saket_janghel_22</h4>
+              <p style="font-size:10.5px; color:var(--text-muted);">Saket Janghel (Active)</p>
+            </div>
+            <i data-lucide="check-circle-2" size="18" color="#00f2fe"></i>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:10px; padding:10px; background:rgba(255,255,255,0.02); border-radius:14px; cursor:pointer;" onclick="switchUserAccount('sameer_eco')">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100" style="width:38px; height:38px; border-radius:50%; object-fit:cover;" />
+            <div style="flex:1;">
+              <h4 style="font-size:13px; color:var(--text-main);">sameer_eco</h4>
+              <p style="font-size:10.5px; color:var(--text-muted);">Sameer Khan</p>
+            </div>
+          </div>
+
+          <button type="button" class="dialog-action-btn" style="background:rgba(255,255,255,0.05); border:1px dashed var(--text-muted); color:var(--text-main);" onclick="alert('Add account flow initiating...')">+ Add Another Account</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- REWARDS CENTER POPUP -->
+    <div class="center-popup-overlay" id="rewardsPopup" onclick="closePopupOnBackdrop(event, 'rewardsPopup')">
+      <div class="center-dialog-card" onclick="event.stopPropagation()">
+        <div class="dialog-header">
+          <h3>Rewards & Missions</h3>
+          <i data-lucide="x" size="18" style="cursor:pointer; color:var(--text-main);" onclick="closeCenterPopup('rewardsPopup')"></i>
+        </div>
+        <div class="dialog-body">
+          <div style="padding:10px; background:rgba(255,255,255,0.03); border-radius:14px; display:flex; align-items:center; gap:10px;">
+            <i data-lucide="gift" size="24" color="#00f2fe"></i>
+            <div>
+              <h4 style="font-size:13px; color:var(--text-main);">Book Swap Master</h4>
+              <p style="font-size:11px; color:var(--text-muted);">Swap 3 books to earn +150 EcoPoints</p>
+            </div>
+          </div>
+          <button class="dialog-action-btn" onclick="alert('Coupon Code: CAMPUS20')">Redeem Canteen Coupon (500 pts)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIME MANAGEMENT CENTER POPUP -->
+    <div class="center-popup-overlay" id="timePopup" onclick="closePopupOnBackdrop(event, 'timePopup')">
+      <div class="center-dialog-card" onclick="event.stopPropagation()">
+        <div class="dialog-header">
+          <h3>Time Management</h3>
+          <i data-lucide="x" size="18" style="cursor:pointer; color:var(--text-main);" onclick="closeCenterPopup('timePopup')"></i>
+        </div>
+        <div class="dialog-body">
+          <p style="font-size:12px; color:var(--text-muted); text-align:center;">Daily average time spent on Tribezz:<br> <strong style="font-size:18px; color:var(--text-main);">26 mins</strong></p>
+          <button class="dialog-action-btn" onclick="alert('Daily 40-minute break reminder set!')">Set 40-Min Daily Break Reminder</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY POPUP -->
+    <div class="center-popup-overlay" id="activityPopup" onclick="closePopupOnBackdrop(event, 'activityPopup')">
+      <div class="center-dialog-card" onclick="event.stopPropagation()">
+        <div class="dialog-header">
+          <h3>Your Activity & Swaps</h3>
+          <i data-lucide="x" size="18" style="cursor:pointer; color:var(--text-main);" onclick="closeCenterPopup('activityPopup')"></i>
+        </div>
+        <div class="dialog-body">
+          <div style="padding:10px; background:rgba(255,255,255,0.03); border-radius:14px; display:flex; align-items:center; gap:10px;">
+            <i data-lucide="leaf" size="24" color="#10b981"></i>
+            <div>
+              <h4 style="font-size:13px; color:var(--text-main);">Total Carbon Offset</h4>
+              <p style="font-size:11px; color:var(--text-muted);">142.50 kg CO2 Saved</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+
+    <!-- BLOCKED ACCOUNTS POPUP -->
+    <div class="center-popup-overlay" id="blockedPopup" onclick="closePopupOnBackdrop(event, 'blockedPopup')">
+      <div class="center-dialog-card" onclick="event.stopPropagation()">
+        <div class="dialog-header">
+          <h3>Blocked Accounts</h3>
+          <i data-lucide="x" size="18" style="cursor:pointer; color:var(--text-main);" onclick="closeCenterPopup('blockedPopup')"></i>
+        </div>
+        <div class="dialog-body">
+          <p style="font-size:12px; color:var(--text-muted); text-align:center; padding:10px 0;">No blocked users. Clean campus network! ✨</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT STATUS POPUP -->
+    <div class="center-popup-overlay" id="statusPopup" onclick="closePopupOnBackdrop(event, 'statusPopup')">
+      <div class="center-dialog-card" onclick="event.stopPropagation()">
+        <div class="dialog-header">
+          <h3>Account Status</h3>
+          <i data-lucide="x" size="18" style="cursor:pointer; color:var(--text-main);" onclick="closeCenterPopup('statusPopup')"></i>
+        </div>
+        <div class="dialog-body" style="text-align:center;">
+          <i data-lucide="check-circle" size="48" color="#10b981" style="margin: 0 auto 10px auto;"></i>
+          <h3 style="color:#10b981; font-size:16px;">Excellent Standing</h3>
+          <p style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Your account is verified and trusted for physical Handshake QR trades across campus.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT POPUP -->
+    <div class="center-popup-overlay" id="aboutPopup" onclick="closePopupOnBackdrop(event, 'aboutPopup')">
+      <div class="center-dialog-card" onclick="event.stopPropagation()">
+        <div class="dialog-header">
+          <h3>About Tribezz</h3>
+          <i data-lucide="x" size="18" style="cursor:pointer; color:var(--text-main);" onclick="closeCenterPopup('aboutPopup')"></i>
+        </div>
+        <div class="dialog-body">
+          <h4 style="font-size:14px; color:var(--text-main);">Tribezz </h4>
+          <p style="font-size:12px; color:var(--text-muted); line-height:1.5;">A decentralized campus circular barter ecosystem. Built with QR escrow and institutional carbon mitigation metrics.</p>
+          <p style="font-size:11px; color:var(--accent-cyan); font-weight:700; margin-top:6px;">Version 2.4.0 • Production Build</p>
+        </div>
+      </div>
+    </div>
+
+  
+
+    <!-- FLOATING CAPSULE DOCK -->
+    <div class="capsule-dock-wrapper">
+      <nav class="glass-capsule-dock">
+        <button type="button" class="capsule-tab-item" onclick="location.replace('index.html')">
+          <i data-lucide="home" size="20"></i>
+          <span>Home</span>
+        </button>
+
+        <button type="button" class="capsule-tab-item" onclick="location.replace('Reels.html')">
+          <i data-lucide="play-circle" size="20"></i>
+          <span>Reels</span>
+        </button>
+
+        <button type="button" class="capsule-tab-item" onclick="location.replace('Message.html')">
+          <i data-lucide="message-square" size="20"></i>
+          <span>Messages</span>
+        </button>
+
+        <button type="button" class="capsule-tab-item" onclick="location.replace('Search.html')">
+          <i data-lucide="search" size="20"></i>
+          <span>Search</span>
+        </button>
+
+        <button type="button" class="capsule-tab-item active">
+          <i data-lucide="user" size="20"></i>
+          <span>Profile</span>
+        </button>
+      </nav>
+    </div>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // ==================== DYNAMIC AVATAR FRAME DATABASE ====================
+    // Identical to Frames.html database so we can apply styles properly
+    const framesDatabase = [];
+    framesDatabase.push({ id: 'f_default', cssCode: `background: var(--primary-gradient); padding: 3.5px; box-shadow: 0 0 22px rgba(0, 242, 254, 0.35);` });
+    framesDatabase.push({ id: 'f_insta', cssCode: `background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); padding: 4px;` });
+    framesDatabase.push({ id: 'f_live', cssCode: `background: linear-gradient(135deg, #f59e0b, #f43f5e); padding: 4px;`, badgeHtml: `<div class="frame-badge-overlay" style="background:linear-gradient(90deg, #f43f5e, #f97316); bottom:-8px;">LIVE</div>` });
+    framesDatabase.push({ id: 'f_tiktok', cssCode: `background: transparent; box-shadow: -3px -3px 0 #00f2fe, 3px 3px 0 #f43f5e; padding: 2px;` });
+    framesDatabase.push({ id: 'f_plus', cssCode: `background: #00f2fe; padding: 3px;`, badgeHtml: `<div class="frame-badge-overlay" style="background:#00f2fe; color:#000; right:-5px; bottom:5px; border-radius:50%; width:20px; height:20px; font-size:14px; padding:0; line-height:16px;">+</div>` });
+    framesDatabase.push({ id: 'f_sub', cssCode: `background: #ef4444; padding: 4px;`, badgeHtml: `<div class="frame-badge-overlay" style="background:#ef4444; bottom:-10px;">SUBSCRIBE</div>` });
+    framesDatabase.push({ id: 'f_verified', cssCode: `background: #10b981; padding: 4px;`, badgeHtml: `<div class="frame-badge-overlay" style="background:#10b981; color:#000; right:-2px; bottom:5px; border-radius:50%; width:18px; height:18px; display:flex; justify-content:center; align-items:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>` });
+    framesDatabase.push({ id: 'f_cyber', cssCode: `background: #000; border: 2px dashed #00f2fe; box-shadow: 0 0 15px #00f2fe; padding: 3px;` });
+
+    const colors = [
+      { n: 'Ruby', c1: '#ff0844', c2: '#ffb199' }, { n: 'Ocean', c1: '#4facfe', c2: '#00f2fe' },
+      { n: 'Toxic', c1: '#0ba360', c2: '#3cba92' }, { n: 'Amethyst', c1: '#667eea', c2: '#764ba2' },
+      { n: 'Sunset', c1: '#fa709a', c2: '#fee140' }, { n: 'Gold', c1: '#f6d365', c2: '#fda085' },
+      { n: 'Midnight', c1: '#30cfd0', c2: '#330867' }, { n: 'Forest', c1: '#43e97b', c2: '#38f9d7' },
+      { n: 'Plasma', c1: '#f43f5e', c2: '#8b5cf6' }
+    ];
+
+    let autoId = 1;
+    colors.forEach(col => {
+      framesDatabase.push({ id: `f_auto_${autoId++}`, cssCode: `background: ${col.c1}; padding: 3px;` });
+      framesDatabase.push({ id: `f_auto_${autoId++}`, cssCode: `background: linear-gradient(135deg, ${col.c1}, ${col.c2}); padding: 4px;` });
+      framesDatabase.push({ id: `f_auto_${autoId++}`, cssCode: `background: ${col.c1}; padding: 3px; box-shadow: 0 0 15px ${col.c1};` });
+      framesDatabase.push({ id: `f_auto_${autoId++}`, cssCode: `background: transparent; border: 3px dashed ${col.c2}; padding: 2px;` });
+      framesDatabase.push({ id: `f_auto_${autoId++}`, cssCode: `background: linear-gradient(135deg, ${col.c1}, ${col.c2}); padding: 4px;`, badgeHtml: `<div class="frame-badge-overlay" style="background:${col.c1}; color:#fff; right:-5px; bottom:2px;">PRO</div>` });
+    });
+
+    function applyEquippedFrame() {
+      const equippedFrameId = localStorage.getItem('ecoEquippedFrame') || 'f_default';
+      const frameData = framesDatabase.find(f => f.id === equippedFrameId);
+
+      const ring = document.getElementById('mainAvatarRing');
+      const badgeContainer = document.getElementById('frameBadgeContainer');
+      
+      if(frameData) {
+        // Apply Dynamic Frame Border/Shadow/Gradient
+        ring.style.cssText = frameData.cssCode + " width: 90px; height: 90px; border-radius: 50%; display: flex; justify-content: center; align-items: center; transition: all 0.3s;";
+        // Apply Dynamic Frame Badges (LIVE, PRO, +)
+        badgeContainer.innerHTML = frameData.badgeHtml || '';
+      }
+    }
+
+    // Call it on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      applyEquippedFrame();
+    });
+
+    // ==================== INTERFACE LOGIC ====================
+    
+    // Open & Close Full Screen Settings
+    function openFullSettingsPage() {
+      document.getElementById('fullSettingsPage').classList.add('open');
+      lucide.createIcons();
+    }
+    function closeFullSettingsPage() {
+      document.getElementById('fullSettingsPage').classList.remove('open');
+    }
+
+    // Screen Center Popups Control
+    function openCenterPopup(popupId) {
+      document.getElementById(popupId).classList.add('show');
+      lucide.createIcons();
+    }
+    function closeCenterPopup(popupId) {
+      document.getElementById(popupId).classList.remove('show');
+    }
+    function closePopupOnBackdrop(e, popupId) {
+      if (e.target.classList.contains('center-popup-overlay')) {
+        closeCenterPopup(popupId);
+      }
+    }
+
+    // Toggles & Preferences
+    function togglePrivacy(chk) {
+      if (chk.checked) {
+        alert("🔒 Account is now Private! Only verified campus peers can see your barter items.");
+      } else {
+        alert("🌍 Account is now Public! All campus students can see your items.");
+      }
+    }
+
+    function toggleLightMode(chk) {
+      if (chk.checked) {
+        document.body.classList.add('light-theme');
+        document.body.classList.remove('read-mode');
+        document.getElementById('readModeToggle').checked = false;
+      } else {
+        document.body.classList.remove('light-theme');
+      }
+    }
+
+    function toggleReadMode(chk) {
+      if (chk.checked) {
+        document.body.classList.add('read-mode');
+        document.body.classList.remove('light-theme');
+        document.getElementById('lightModeToggle').checked = false;
+      } else {
+        document.body.classList.remove('read-mode');
+      }
+    }
+
+    function changeLanguagePrompt() {
+      const choice = prompt("Select Language:\n1. English (US)\n2. Hindi (हिंदी)\n3. Hinglish", "English (US)");
+      if (choice) {
+        document.getElementById('currLangTxt').innerText = choice;
+      }
+    }
+
+    // Edit Profile Logic
+    let uploadedAvatarBase64 = "";
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          uploadedAvatarBase64 = e.target.result;
+          document.getElementById('previewImg').src = uploadedAvatarBase64;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function saveProfileChanges() {
+      const name = document.getElementById('editNameInput').value.trim();
+      const dept = document.getElementById('editDeptInput').value.trim();
+      const bio = document.getElementById('editBioInput').value.trim();
+
+      if (name) document.getElementById('displayName').innerHTML = `${name} <span class="verified-badge" style="color:var(--accent-cyan);">✓</span>`;
+      if (dept) document.getElementById('displayDept').innerText = dept;
+      if (bio) document.getElementById('displayBio').innerText = bio;
+      if (uploadedAvatarBase64) document.getElementById('displayProfilePic').src = uploadedAvatarBase64;
+
+      closeCenterPopup('editProfilePopup');
+      alert('Profile synced & updated successfully!');
+    }
+
+    function switchUserAccount(username) {
+      document.getElementById('topUsername').innerText = username;
+      alert(`Switched active account to: @${username}`);
+      closeCenterPopup('accountPopup');
+    }
+
+    // Sub-Tabs
+    function switchProfileTab(tabName, clickedBtn) {
+      document.querySelectorAll('.tab-nav-item').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-view-panel').forEach(panel => panel.classList.remove('active'));
+      clickedBtn.classList.add('active');
+      document.getElementById(`panel-${tabName}`).classList.add('active');
+    }
+
+    function shareProfile() {
+      if (navigator.share) {
+        navigator.share({ title: 'Tribezz Profile', url: window.location.href });
+      } else {
+        alert('Profile link copied to clipboard! 📋');
+      }
+    }
+
+    function confirmLogout() {
+      if (confirm("Are you sure you want to log out?")) {
+        location.replace('Login.html');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Rewards & Missions - Tribezz</title>
+
+  <!-- Google Fonts & Lucide Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg-darkest: #04070d;
+      --bg-surface: #0a0f1d;
+      --bg-card: rgba(16, 24, 40, 0.95);
+      --primary-gradient: linear-gradient(135deg, #00f2fe 0%, #8b5cf6 50%, #f43f5e 100%);
+      --accent-cyan: #00f2fe;
+      --accent-pink: #f43f5e;
+      --accent-purple: #8b5cf6;
+      --accent-gold: #f59e0b;
+      --accent-green: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-glass: rgba(255, 255, 255, 0.1);
+      --border-focus: rgba(139, 92, 246, 0.45);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #010307;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .mobile-frame {
+      width: 100%;
+      max-width: 412px;
+      height: 100vh;
+      background-color: var(--bg-darkest);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 60px -15px rgba(0, 242, 254, 0.15), 0 0 0 1px var(--border-glass);
+    }
+
+    /* TOP NAVBAR */
+    .top-navbar {
+      height: 64px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      background: rgba(10, 15, 29, 0.94);
+      backdrop-filter: blur(18px);
+      z-index: 20;
+      border-bottom: 1px solid var(--border-glass);
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .back-btn {
+      color: var(--text-main);
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+    .page-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    /* COIN BALANCE PILL */
+    .coin-balance-pill {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 6px 14px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+    }
+    .coin-balance-pill span {
+      color: var(--accent-gold);
+      font-size: 14.5px;
+      font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* ==================== BIG TABS ==================== */
+    .big-tabs-row {
+      display: flex;
+      gap: 12px;
+      padding: 16px;
+      background: var(--bg-surface);
+    }
+
+    .big-tab {
+      flex: 1;
+      height: 50px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.3s;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-glass);
+    }
+    .big-tab:active { transform: scale(0.96); }
+    .big-tab i { transition: transform 0.3s; }
+
+    /* Missions Tab Active */
+    .big-tab.missions.active {
+      background: linear-gradient(135deg, #1e3a8a 0%, #8b5cf6 100%);
+      border: 1px solid #c084fc;
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35);
+    }
+    .big-tab.missions.active i { color: #fff; }
+
+    /* Rewards Tab Active */
+    .big-tab.rewards.active {
+      background: linear-gradient(135deg, #e11d48 0%, #f59e0b 100%);
+      border: 1px solid #fbbf24;
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(244, 63, 94, 0.35);
+    }
+    .big-tab.rewards.active i { color: #fff; }
+
+    /* SCROLLABLE AREA */
+    .scroll-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 16px 110px 16px; /* Added extra padding to avoid overlap */
+      scrollbar-width: none;
+      background: var(--bg-surface);
+    }
+    .scroll-content::-webkit-scrollbar { display: none; }
+
+    /* TAB PANELS */
+    .tab-panel {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tab-panel.active { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* HERO FEATURED BANNER */
+    .featured-banner {
+      width: 100%;
+      height: 160px;
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.1);
+      margin-top: 8px;
+    }
+    .featured-banner img {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+    .banner-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+      z-index: 2;
+    }
+    .banner-content {
+      position: relative;
+      z-index: 3;
+    }
+    .banner-content h2 { font-size: 20px; font-weight: 900; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.9); }
+    .banner-content p { font-size: 12px; color: #e2e8f0; font-weight: 600; margin-top: 4px; }
+    .banner-badge {
+      position: absolute;
+      top: 14px; right: 14px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 800;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* PREMIUM LIST CARDS */
+    .task-card {
+      background: linear-gradient(145deg, rgba(22, 30, 46, 0.9), rgba(10, 15, 29, 0.95));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.2s;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    
+    .task-icon-ring {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+      box-shadow: inset 0 2px 5px rgba(255,255,255,0.1);
+    }
+
+    .task-info { flex: 1; }
+    .task-info h4 { font-size: 14.5px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .task-info p { font-size: 11px; color: var(--text-muted); font-weight: 500; line-height: 1.4; }
+    
+    .coin-reward-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-gold);
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      margin-top: 8px;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    /* ACTION BUTTONS */
+    .action-btn {
+      min-width: 90px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    }
+    .action-btn:active { transform: scale(0.94); }
+
+    /* Button States */
+    .btn-verify {
+      background: rgba(0, 242, 254, 0.15);
+      border: 1px solid rgba(0, 242, 254, 0.4);
+      color: var(--accent-cyan);
+    }
+    .btn-action {
+      background: linear-gradient(135deg, #8b5cf6, #d946ef);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35);
+    }
+    .btn-claimed {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Reward Redeem Buttons */
+    .btn-redeem {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: var(--accent-gold);
+    }
+
+    /* Spinning Loader */
+    .spin { animation: spinAnim 1s linear infinite; }
+    @keyframes spinAnim { 100% { transform: rotate(360deg); } }
+
+
+    /* ==================== CUSTOM ALERT / TOAST POPUP ==================== */
+    .custom-alert-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(14px);
+      z-index: 200;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .custom-alert-overlay.show { display: flex; }
+    
+    .custom-alert-card {
+      background: #0d1527;
+      border: 1px solid var(--border-focus);
+      border-radius: 24px;
+      padding: 26px 20px;
+      width: 100%;
+      max-width: 320px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      animation: popInAlert 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.85);
+    }
+    @keyframes popInAlert { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    .alert-icon-ring {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .alert-icon-ring.success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 2px solid #10b981;
+      color: #10b981;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+    }
+    .alert-icon-ring.info {
+      background: rgba(245, 158, 11, 0.15);
+      border: 2px solid #f59e0b;
+      color: #f59e0b;
+    }
+    .alert-icon-ring.error {
+      background: rgba(244, 63, 94, 0.15);
+      border: 2px solid #f43f5e;
+      color: #f43f5e;
+    }
+
+    .custom-alert-card h3 { font-size: 18px; color: #fff; font-weight: 800; }
+    .custom-alert-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; padding: 0 10px; }
+    
+    .alert-ok-btn {
+      width: 100%;
+      margin-top: 10px;
+      padding: 14px 0;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      background: var(--primary-gradient);
+      color: #fff;
+    }
+
+    .coupon-box {
+      background: rgba(255,255,255,0.05);
+      border: 1px dashed var(--accent-gold);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      letter-spacing: 2px;
+      margin-top: 8px;
+      display: none;
+    }
+    .coupon-box.show { display: inline-block; }
+
+    /* ==================== BOTTOM FLOATING DOCK ==================== */
+    .capsule-dock-wrapper {
+      position: absolute;
+      bottom: 18px;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+      pointer-events: none;
+      padding: 0 16px;
+    }
+
+    .glass-capsule-dock {
+      pointer-events: auto;
+      width: 100%;
+      max-width: 370px;
+      height: 64px;
+      background: rgba(12, 18, 33, 0.72);
+      backdrop-filter: blur(28px) saturate(210%);
+      border: 1.2px solid rgba(255, 255, 255, 0.12);
+      border-top: 1.2px solid rgba(255, 255, 255, 0.22);
+      border-radius: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.85);
+    }
+    .capsule-tab-item {
+      background: transparent;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 26px;
+      flex: 1;
+    }
+    .capsule-tab-item.active {
+      color: #ffffff;
+      background: linear-gradient(180deg, rgba(0, 242, 254, 0.16) 0%, rgba(139, 92, 246, 0.08) 100%);
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      box-shadow: 0 4px 16px -2px rgba(0, 242, 254, 0.35);
+    }
+    .capsule-tab-item.active i {
+      color: var(--accent-cyan);
+      filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.85));
+    }
+    .capsule-tab-item span { font-size: 10px; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-frame">
+    
+    <!-- Top Header -->
+    <header class="top-navbar">
+      <div class="nav-left">
+        <button class="back-btn" onclick="location.replace('Profile.html')">
+          <i data-lucide="arrow-left" size="24"></i>
+        </button>
+        <h1 class="page-title">Rewards Center</h1>
+      </div>
+      <div class="coin-balance-pill">
+        <i data-lucide="coins" size="18" color="#f59e0b"></i>
+        <span id="userBalanceUI">2,500</span>
+      </div>
+    </header>
+
+    <!-- BIG TABS -->
+    <div class="big-tabs-row">
+      <div class="big-tab missions active" id="btnTabMissions" onclick="switchTab('missions')">
+        <i data-lucide="sparkles" size="18" color="#a78bfa"></i>
+        <span>Missions</span>
+      </div>
+      <div class="big-tab rewards" id="btnTabRewards" onclick="switchTab('rewards')">
+        <i data-lucide="gift" size="18" color="#fb7185"></i>
+        <span>Rewards</span>
+      </div>
+    </div>
+
+    <!-- MAIN SCROLL AREA -->
+    <main class="scroll-content">
+      
+      <!-- ==================== MISSIONS TAB ==================== -->
+      <div class="tab-panel active" id="panelMissions">
+        
+        <!-- Hero Banner Mission -->
+        <div class="featured-banner">
+          <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600" alt="Eco Mission" />
+          <div class="banner-overlay"></div>
+          <div class="banner-badge"><i data-lucide="zap" size="12"></i> DAILY STREAK</div>
+          <div class="banner-content">
+            <h2>Campus Eco Warrior</h2>
+            <p>Complete daily tasks to multiply your EcoPoints earning!</p>
+          </div>
+        </div>
+
+        <!-- Mission Cards -->
+
+        <!-- 1. Share & Earn (Action based) -->
+        <div class="task-card">
+          <div class="task-icon-ring" style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4);">
+            <i data-lucide="share-2" size="24" color="#8b5cf6"></i>
+          </div>
+          <div class="task-info">
+            <h4>Share & Earn</h4>
+            <p>Invite a campus friend to Tribezz.</p>
+            <div class="coin-reward-tag"><i data-lucide="coins" size="12"></i> +150 Coins</div>
+          </div>
+          <button class="action-btn btn-action" id="m_share" onclick="handleShareMission(this)">Share</button>
+        </div>
+
+        <!-- 2. Daily Login -->
+        <div class="task-card">
+          <div class="task-icon-ring" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4);">
+            <i data-lucide="calendar-check" size="24" color="#10b981"></i>
+          </div>
+          <div class="task-info">
+            <h4>Daily Login</h4>
+            <p>Open Tribezz app every day.</p>
+            <div class="coin-reward-tag"><i data-lucide="coins" size="12"></i> +100 Coins</div>
+          </div>
+          <!-- User must click Verify -->
+          <button class="action-btn btn-verify" id="m_login" onclick="detectAndClaim('m_login', 100, this)">Verify</button>
+        </div>
+
+        <!-- 3. Spread Love -->
+        <div class="task-card">
+          <div class="task-icon-ring" style="background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.4);">
+            <i data-lucide="heart" size="24" color="#f43f5e"></i>
+          </div>
+          <div class="task-info">
+            <h4>Spread Love</h4>
+            <p>Like 5 posts on the Home Feed.</p>
+            <div class="coin-reward-tag"><i data-lucide="coins" size="12"></i> +50 Coins</div>
+          </div>
+          <button class="action-btn btn-verify" id="m_likes" onclick="detectAndClaim('m_likes', 50, this)">Verify</button>
+        </div>
+
+        <!-- 4. Join Conversation -->
+        <div class="task-card">
+          <div class="task-icon-ring" style="background: rgba(0, 242, 254, 0.15); border: 1px solid rgba(0, 242, 254, 0.4);">
+            <i data-lucide="message-circle" size="24" color="#00f2fe"></i>
+          </div>
+          <div class="task-info">
+            <h4>Join Conversation</h4>
+            <p>Comment on 3 different peer posts.</p>
+            <div class="coin-reward-tag"><i data-lucide="coins" size="12"></i> +80 Coins</div>
+          </div>
+          <button class="action-btn btn-verify" id="m_comments" onclick="detectAndClaim('m_comments', 80, this)">Verify</button>
+        </div>
+
+        <!-- 5. Campus Story -->
+        <div class="task-card">
+          <div class="task-icon-ring" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4);">
+            <i data-lucide="camera" size="24" color="#f59e0b"></i>
+          </div>
+          <div class="task-info">
+            <h4>Campus Story</h4>
+            <p>Add a 24h story to your profile.</p>
+            <div class="coin-reward-tag"><i data-lucide="coins" size="12"></i> +150 Coins</div>
+          </div>
+          <button class="action-btn btn-verify" id="m_story" onclick="detectAndClaim('m_story', 150, this)">Verify</button>
+        </div>
+
+      </div>
+
+      <!-- ==================== REWARDS TAB ==================== -->
+      <div class="tab-panel" id="panelRewards">
+        
+        <!-- Hero Banner Reward -->
+        <div class="featured-banner">
+          <img src="https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=600" alt="Coffee Reward" />
+          <div class="banner-overlay" style="background: linear-gradient(to top, rgba(225, 29, 72, 0.95) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);"></div>
+          <div class="banner-badge" style="border-color:#fbbf24; color:#fbbf24;"><i data-lucide="flame" size="10"></i> HOT REWARD</div>
+          <div class="banner-content">
+            <h2>Free Campus Coffee</h2>
+            <p>Redeem your points for a free coffee at Main Canteen!</p>
+          </div>
+        </div>
+
+        <!-- Reward Cards -->
+        <div class="task-card">
+          <div class="task-icon-ring" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4);">
+            <i data-lucide="coffee" size="24" color="#f59e0b"></i>
+          </div>
+          <div class="task-info">
+            <h4>Canteen Coupon (20% OFF)</h4>
+            <p>Valid at all campus cafeterias.</p>
+            <div class="coin-reward-tag" style="color:var(--text-muted); border-color:var(--border-glass); background:rgba(255,255,255,0.05);"><i data-lucide="coins" size="12"></i> 500 Coins</div>
+          </div>
+          <button class="action-btn btn-redeem" onclick="redeemReward('Canteen Coupon', 500)">Redeem</button>
+        </div>
+
+        <div class="task-card">
+          <div class="task-icon-ring" style="background: rgba(0, 242, 254, 0.15); border: 1px solid rgba(0, 242, 254, 0.4);">
+            <i data-lucide="aperture" size="24" color="#00f2fe"></i>
+          </div>
+          <div class="task-info">
+            <h4>Exclusive Avatar Frames</h4>
+            <p>Unlock custom profile neon rings.</p>
+            <div class="coin-reward-tag" style="color:var(--text-muted); border-color:var(--border-glass); background:rgba(255,255,255,0.05);">Starts @ 350 Coins</div>
+          </div>
+          <button class="action-btn btn-action" onclick="location.replace('Frames.html')">View Store</button>
+        </div>
+
+        <div class="task-card">
+          <div class="task-icon-ring" style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.4);">
+            <i data-lucide="book-open" size="24" color="#8b5cf6"></i>
+          </div>
+          <div class="task-info">
+            <h4>Library Late Fee Waiver</h4>
+            <p>Waive off your delayed return fine instantly.</p>
+            <div class="coin-reward-tag" style="color:var(--text-muted); border-color:var(--border-glass); background:rgba(255,255,255,0.05);"><i data-lucide="coins" size="12"></i> 1000 Coins</div>
+          </div>
+          <button class="action-btn btn-redeem" onclick="redeemReward('Library Fee Waiver', 1000)">Redeem</button>
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- ==================== PROFESSIONAL CUSTOM ALERT POPUP ==================== -->
+    <div class="custom-alert-overlay" id="customAlertOverlay">
+      <div class="custom-alert-card">
+        <div class="alert-icon-ring" id="alertIconRing">
+          <i data-lucide="alert-circle" size="32" id="alertIcon"></i>
+        </div>
+        <h3 id="alertTitle">Title</h3>
+        <p id="alertMessage">Message description goes here.</p>
+        
+        <!-- Coupon container for Rewards -->
+        <div class="coupon-box" id="couponBox">ECO-XYZ123</div>
+
+        <button class="alert-ok-btn" onclick="closeCustomAlert()">Got it</button>
+      </div>
+    </div>
+
+    <!-- ==================== BOTTOM FLOATING DOCK ==================== -->
+    <div class="capsule-dock-wrapper">
+      <nav class="glass-capsule-dock">
+        <button type="button" class="capsule-tab-item" onclick="location.replace('index.html')">
+          <i data-lucide="home" size="20"></i>
+          <span>Home</span>
+        </button>
+
+        <button type="button" class="capsule-tab-item" onclick="location.replace('Reels.html')">
+          <i data-lucide="play-circle" size="20"></i>
+          <span>Reels</span>
+        </button>
+
+        <button type="button" class="capsule-tab-item" onclick="location.replace('Message.html')">
+          <i data-lucide="message-square" size="20"></i>
+          <span>Messages</span>
+        </button>
+
+        <button type="button" class="capsule-tab-item" onclick="location.replace('Search.html')">
+          <i data-lucide="search" size="20"></i>
+          <span>Search</span>
+        </button>
+
+        <button type="button" class="capsule-tab-item active" onclick="location.replace('Profile.html')">
+          <i data-lucide="user" size="20"></i>
+          <span>Profile</span>
+        </button>
+      </nav>
+    </div>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // ==================== GLOBAL STATE & DB ====================
+    let userCoins = parseInt(localStorage.getItem('ecoCoins')) || 2500;
+    let claimedMissions = JSON.parse(localStorage.getItem('ecoMissionsClaimed')) || [];
+
+    // Sync Balance visually and locally
+    function updateBalanceUI() {
+      document.getElementById('userBalanceUI').innerText = userCoins.toLocaleString();
+      localStorage.setItem('ecoCoins', userCoins);
+    }
+    updateBalanceUI();
+
+    // ==================== UI LOGIC ====================
+    function switchTab(tabId) {
+      document.getElementById('btnTabMissions').classList.remove('active');
+      document.getElementById('btnTabRewards').classList.remove('active');
+      document.getElementById('panelMissions').classList.remove('active');
+      document.getElementById('panelRewards').classList.remove('active');
+
+      if (tabId === 'missions') {
+        document.getElementById('btnTabMissions').classList.add('active');
+        document.getElementById('panelMissions').classList.add('active');
+      } else {
+        document.getElementById('btnTabRewards').classList.add('active');
+        document.getElementById('panelRewards').classList.add('active');
+      }
+    }
+
+    // Initialize Mission Buttons State on Load
+    function initMissionsState() {
+      claimedMissions.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.innerHTML = '<i data-lucide="check" size="14"></i> Claimed';
+          btn.className = 'action-btn btn-claimed';
+          btn.disabled = true;
+        }
+      });
+      lucide.createIcons();
+    }
+    initMissionsState();
+
+    // ==================== DETECTION & CLAIM LOGIC ====================
+    
+    // Simulate Background Detection
+    function detectAndClaim(missionId, points, btnElement) {
+      // Show Verification state
+      btnElement.innerHTML = '<i data-lucide="loader" size="14" class="spin"></i> Verifying';
+      btnElement.disabled = true;
+      btnElement.style.opacity = "0.7";
+      lucide.createIcons();
+
+      // Fake API Delay (1.5 seconds) to simulate checking user activity
+      setTimeout(() => {
+        // Verification Successful
+        userCoins += points;
+        updateBalanceUI();
+
+        // Save State
+        claimedMissions.push(missionId);
+        localStorage.setItem('ecoMissionsClaimed', JSON.stringify(claimedMissions));
+
+        // Update Button visually
+        btnElement.style.opacity = "1";
+        btnElement.innerHTML = '<i data-lucide="check" size="14"></i> Claimed';
+        btnElement.className = 'action-btn btn-claimed';
+        lucide.createIcons();
+
+        // Show Success Popup
+        showCustomAlert('Mission Verified! 🚀', `Task detected successfully! You have earned +${points} EcoPoints.`, 'success');
+      }, 1500); 
+    }
+
+    // Special Logic for Share & Earn
+    function handleShareMission(btnElement) {
+      // Step 1: Open Native Share Dialog
+      if (navigator.share) {
+        navigator.share({
+          title: 'Join me on Tribezz!',
+          text: 'Use my invite link to join the sustainable campus network and earn free EcoPoints!',
+          url: 'https://tribezz.app/invite/saket22'
+        }).then(() => {
+          // After successful share, verify and claim
+          detectAndClaim('m_share', 150, btnElement);
+        }).catch((error) => {
+          console.log('Error sharing', error);
+          // Fallback if user cancels share
+          btnElement.innerHTML = 'Share';
+        });
+      } else {
+        // Fallback for desktop/unsupported browsers
+        alert("Invite link copied to clipboard: https://tribezz.app/invite/saket22");
+        detectAndClaim('m_share', 150, btnElement);
+      }
+    }
+
+    // ==================== REWARD REDEEM LOGIC ====================
+    function redeemReward(rewardName, cost) {
+      if (userCoins >= cost) {
+        userCoins -= cost;
+        updateBalanceUI();
+        
+        // Generate random coupon code
+        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+        showCustomAlert('Reward Redeemed! 🎁', `Successfully redeemed ${rewardName}. Show this code at the counter:`, 'success', `ECO-${code}`);
+      } else {
+        showCustomAlert('Insufficient EcoPoints', `You need ${cost} EcoPoints to redeem this reward. Keep completing daily campus missions!`, 'error');
+      }
+    }
+
+    // ==================== PROFESSIONAL CUSTOM ALERT ====================
+    function showCustomAlert(title, message, type = 'info', couponCode = null) {
+      document.getElementById('alertTitle').innerText = title;
+      document.getElementById('alertMessage').innerText = message;
+      
+      const ring = document.getElementById('alertIconRing');
+      const icon = document.getElementById('alertIcon');
+      const couponBox = document.getElementById('couponBox');
+      
+      // Reset classes
+      ring.className = 'alert-icon-ring';
+      couponBox.classList.remove('show');
+      
+      if(type === 'error') {
+        ring.classList.add('error');
+        icon.setAttribute('data-lucide', 'x-circle');
+      } else if(type === 'success') {
+        ring.classList.add('success');
+        icon.setAttribute('data-lucide', 'check-circle-2');
+        
+        if (couponCode) {
+          couponBox.innerText = couponCode;
+          couponBox.classList.add('show');
+        }
+      } else {
+        ring.classList.add('info');
+        icon.setAttribute('data-lucide', 'gift');
+      }
+      
+      lucide.createIcons();
+      document.getElementById('customAlertOverlay').classList.add('show');
+    }
+
+    function closeCustomAlert() {
+      document.getElementById('customAlertOverlay').classList.remove('show');
+    }
+  </script>
+</body>
+</html>

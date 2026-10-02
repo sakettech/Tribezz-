@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Reels - EcoFeed</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg-darkest: #000000;
+      --accent-pink: #f43f5e;
+      --accent-cyan: #00f2fe;
+      --accent-purple: #8b5cf6;
+      --text-main: #ffffff;
+      --border-glass: rgba(255, 255, 255, 0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background-color: #020408;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .mobile-frame {
+      width: 100%;
+      max-width: 412px;
+      height: 100vh;
+      background-color: var(--bg-darkest);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px var(--border-glass);
+    }
+
+    /* Top Header */
+    .reels-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      z-index: 60;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+    }
+
+    .reels-header h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      letter-spacing: -0.5px;
+    }
+
+    .header-tools {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sound-badge-indicator {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.15s, background 0.2s;
+    }
+    .sound-badge-indicator:active { transform: scale(0.88); }
+    .sound-badge-indicator.unmuted {
+      background: var(--accent-purple);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Floating Toast */
+    .center-sound-toast {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      width: 72px;
+      height: 72px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      z-index: 70;
+      pointer-events: none;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s;
+      opacity: 0;
+    }
+    .center-sound-toast.show {
+      transform: translate(-50%, -50%) scale(1.1);
+      opacity: 1;
+    }
+
+    /* Double Tap Pop Heart */
+    .double-tap-heart {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      color: var(--accent-pink);
+      font-size: 80px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 65;
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s;
+      filter: drop-shadow(0 0 25px var(--accent-pink));
+    }
+    .double-tap-heart.animate {
+      transform: translate(-50%, -50%) scale(1.2);
+      opacity: 1;
+    }
+
+    /* Scroll Container */
+    .reels-scroll-container {
+      flex: 1;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+      background: #000;
+      padding-bottom: 64px;
+    }
+    .reels-scroll-container::-webkit-scrollbar { display: none; }
+
+    /* Reel Card */
+    .reel-card {
+      width: 100%;
+      height: 100vh;
+      scroll-snap-align: start;
+      position: relative;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .native-reel-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: #000;
+    }
+
+    /* Shadows */
+    .reel-top-shadow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 130px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.75) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .reel-bottom-shadow {
+      position: absolute;
+      bottom: 64px;
+      left: 0;
+      right: 0;
+      height: 250px;
+      background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Bottom UI Layer */
+    .reel-ui-layer {
+      position: absolute;
+      bottom: 76px;
+      left: 0;
+      right: 0;
+      padding: 0 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    .reel-info-bottom {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 18px;
+      pointer-events: auto;
+    }
+
+    .reel-user-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .reel-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      object-fit: cover;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+
+    .reel-username {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+    }
+
+    .follow-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .follow-btn:active { transform: scale(0.92); }
+
+    .reel-caption {
+      font-size: 12.5px;
+      color: #f1f5f9;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+    }
+
+    .reel-audio-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      color: #cbd5e1;
+      width: fit-content;
+    }
+
+    /* Right Action Dock */
+    .reel-actions-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 4px;
+      pointer-events: auto;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.9));
+      transition: transform 0.15s;
+    }
+    .action-btn:active { transform: scale(0.85); }
+
+    .action-btn span {
+      font-size: 11px;
+      font-weight: 700;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+
+    .action-btn.liked { color: var(--accent-pink); }
+    .action-btn.liked i { fill: var(--accent-pink); }
+
+    .audio-album-disc {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      animation: spinDisc 4s linear infinite;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    }
+
+    @keyframes spinDisc {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Bottom Navigation */
+    .bottom-navigation {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(5, 8, 14, 0.95);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border-glass);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 6px;
+      z-index: 60;
+    }
+
+    .nav-tab {
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: rgba(255,255,255,0.45);
+      font-size: 10.5px;
+      font-weight: 600;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .nav-tab.active { color: #ffffff; }
+    .nav-tab.active i {
+      color: var(--accent-purple);
+      filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.8));
+    }
+    .nav-tab i { width: 22px; height: 22px; }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-frame">
+    
+    <!-- Top Header -->
+    <header class="reels-header">
+      <h1>Reels</h1>
+      <div class="header-tools">
+        <div class="sound-badge-indicator" onclick="toggleGlobalAudio(event)" id="soundBtn" title="Toggle Sound">
+          <i data-lucide="volume-x" size="18" id="soundIcon"></i>
+        </div>
+        <i data-lucide="camera" size="22" style="cursor:pointer;" onclick="alert('Camera Opened')"></i>
+      </div>
+    </header>
+
+    <!-- Center Floating Sound Toast -->
+    <div class="center-sound-toast" id="soundToast">
+      <i data-lucide="volume-2" size="32" id="toastIcon"></i>
+    </div>
+
+    <!-- Reels Scroll Container -->
+    <main class="reels-scroll-container" id="reelsContainer">
+      <!-- Direct Video Reels are rendered here -->
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-navigation">
+      <button type="button" class="nav-tab" onclick="location.replace('index.html')">
+        <i data-lucide="home"></i>
+        <span>Home</span>
+      </button>
+
+      <button type="button" class="nav-tab active">
+        <i data-lucide="play-square"></i>
+        <span>Reels</span>
+      </button>
+
+      <button type="button" class="nav-tab" onclick="location.replace('Message.html')">
+        <i data-lucide="message-square"></i>
+        <span>Messages</span>
+      </button>
+
+      <button type="button" class="nav-tab" onclick="location.replace('Search.html')">
+        <i data-lucide="search"></i>
+        <span>Search</span>
+      </button>
+
+      <button type="button" class="nav-tab" onclick="location.replace('Profile.html')">
+        <i data-lucide="user"></i>
+        <span>Profile</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // High-Quality Guaranteed Fast Video Streams (Auto-Cached & Zero-Latency)
+    const REELS_DATA = [
+      {
+        id: "reel-1",
+        username: "saket_janghel_22",
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120",
+        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        caption: "Zero-waste tech components testing in campus lab! 🚀🌱 #EcoTech #Engineering",
+        likes: "14.2",
+        comments: 184
+      },
+      {
+        id: "reel-2",
+        username: "priya_green",
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120",
+        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+        caption: "Over 50 saplings planted across campus garden today! 🌿 Big thanks to volunteers! 💚",
+        likes: "28.6",
+        comments: 420
+      },
+      {
+        id: "reel-3",
+        username: "yash_dwivedi",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120",
+        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+        caption: "Smart IoT solar monitoring board testing on rooftop. Clean energy future! ⚡☀️",
+        likes: "32.1",
+        comments: 512
+      },
+      {
+        id: "reel-4",
+        username: "rahul_raj",
+        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120",
+        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4",
+        caption: "Upcycled reference book swap drive completed for semester juniors! 📚✨",
+        likes: "19.8",
+        comments: 290
+      }
+    ];
+
+    let isGlobalMuted = true;
+    let activeVideoElement = null;
+    let lastTapTime = 0;
+
+    function renderReels() {
+      const container = document.getElementById('reelsContainer');
+      container.innerHTML = '';
+
+      REELS_DATA.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'reel-card';
+        card.setAttribute('data-index', index);
+
+        // Tap for Mute/Unmute & Double Tap to Heart
+        card.addEventListener('click', (e) => handleReelTap(e, card));
+
+        card.innerHTML = `
+          <div class="reel-top-shadow"></div>
+          
+          <video 
+            class="native-reel-video" 
+            src="${item.videoUrl}" 
+            loop 
+            playsinline 
+            webkit-playsinline
+            muted
+            preload="metadata">
+          </video>
+
+          <div class="double-tap-heart">❤️</div>
+
+          <div class="reel-bottom-shadow"></div>
+
+          <div class="reel-ui-layer">
+            <div class="reel-info-bottom" onclick="event.stopPropagation()">
+              <div class="reel-user-row">
+                <img src="${item.avatar}" class="reel-avatar" />
+                <span class="reel-username">${item.username} <svg width="12" height="12" viewBox="0 0 24 24" fill="#00f2fe"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></span>
+                <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+              </div>
+              <p class="reel-caption">${item.caption}</p>
+              <div class="reel-audio-pill">
+                <i data-lucide="music" size="12"></i>
+                <span>Original Audio - ${item.username}</span>
+              </div>
+            </div>
+
+            <!-- Right Buttons -->
+            <div class="reel-actions-right" onclick="event.stopPropagation()">
+              <button class="action-btn" onclick="toggleLike(this)">
+                <i data-lucide="heart" size="26"></i>
+                <span class="like-num">${item.likes}k</span>
+              </button>
+
+              <button class="action-btn" onclick="alert('Comments opening...')">
+                <i data-lucide="message-circle" size="26"></i>
+                <span>${item.comments}</span>
+              </button>
+
+              <button class="action-btn" onclick="shareReel('${item.username}')">
+                <i data-lucide="send" size="24"></i>
+                <span>Share</span>
+              </button>
+
+              <button class="action-btn" onclick="alert('More options')">
+                <i data-lucide="more-horizontal" size="22"></i>
+              </button>
+
+              <img src="${item.avatar}" class="audio-album-disc" />
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+      setupScrollAutoplay();
+    }
+
+    // Scroll Detection with 100% Guaranteed Autoplay
+    function setupScrollAutoplay() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const video = entry.target.querySelector('video');
+          if (entry.isIntersecting) {
+            activeVideoElement = video;
+            video.muted = isGlobalMuted;
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(() => {
+                // Autoplay fallback with mute
+                video.muted = true;
+                video.play();
+              });
+            }
+          } else {
+            video.pause();
+            video.currentTime = 0;
+          }
+        });
+      }, { threshold: 0.65 });
+
+      document.querySelectorAll('.reel-card').forEach(card => observer.observe(card));
+    }
+
+    // Tap Handling (Single Tap = Toggle Sound, Double Tap = Heart Like)
+    function handleReelTap(e, card) {
+      const currentTime = new Date().getTime();
+      const tapGap = currentTime - lastTapTime;
+
+      if (tapGap < 300 && tapGap > 0) {
+        // Double Tap Trigger
+        triggerPopHeart(card);
+      } else {
+        // Single Tap Trigger (Sound Toggle)
+        toggleGlobalAudio(e);
+      }
+      lastTapTime = currentTime;
+    }
+
+    // Double Tap Heart Animation
+    function triggerPopHeart(card) {
+      const heart = card.querySelector('.double-tap-heart');
+      const likeBtn = card.querySelector('.action-btn');
+      
+      heart.classList.add('animate');
+      setTimeout(() => heart.classList.remove('animate'), 550);
+
+      if (!likeBtn.classList.contains('liked')) {
+        toggleLike(likeBtn);
+      }
+    }
+
+    // Toggle Audio Unmute/Mute
+    function toggleGlobalAudio(e) {
+      if (e) e.stopPropagation();
+      isGlobalMuted = !isGlobalMuted;
+
+      const soundBtn = document.getElementById('soundBtn');
+      const soundIcon = document.getElementById('soundIcon');
+      const toast = document.getElementById('soundToast');
+      const toastIcon = document.getElementById('toastIcon');
+
+      // Update all video audio states
+      document.querySelectorAll('video').forEach(vid => {
+        vid.muted = isGlobalMuted;
+      });
+
+      // Ensure active video is playing with audio
+      if (activeVideoElement) {
+        activeVideoElement.muted = isGlobalMuted;
+        activeVideoElement.play();
+      }
+
+      // Update UI Icons
+      if (isGlobalMuted) {
+        soundBtn.classList.remove('unmuted');
+        soundIcon.setAttribute('data-lucide', 'volume-x');
+        toastIcon.setAttribute('data-lucide', 'volume-x');
+      } else {
+        soundBtn.classList.add('unmuted');
+        soundIcon.setAttribute('data-lucide', 'volume-2');
+        toastIcon.setAttribute('data-lucide', 'volume-2');
+      }
+      lucide.createIcons();
+
+      // Show Toast Notification
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 600);
+    }
+
+    // Like Button Toggle
+    function toggleLike(btn) {
+      const numSpan = btn.querySelector('.like-num');
+      let val = parseFloat(numSpan.innerText);
+      if (btn.classList.contains('liked')) {
+        btn.classList.remove('liked');
+        numSpan.innerText = (val - 0.1).toFixed(1) + 'k';
+      } else {
+        btn.classList.add('liked');
+        numSpan.innerText = (val + 0.1).toFixed(1) + 'k';
+      }
+      lucide.createIcons();
+    }
+
+    // Follow Toggle
+    function toggleFollow(btn) {
+      if (btn.innerText === "Follow") {
+        btn.innerText = "Following";
+        btn.style.background = "rgba(0, 242, 254, 0.2)";
+        btn.style.borderColor = "var(--accent-cyan)";
+      } else {
+        btn.innerText = "Follow";
+        btn.style.background = "rgba(255, 255, 255, 0.15)";
+        btn.style.borderColor = "rgba(255, 255, 255, 0.4)";
+      }
+    }
+
+    function shareReel(username) {
+      if (navigator.share) {
+        navigator.share({ title: 'EcoFeed Reel', text: `Check out @${username}'s reel on EcoFeed!`, url: window.location.href });
+      } else {
+        alert('Reel link copied to clipboard! 📋');
+      }
+    }
+
+    // Initialize Reels on Load
+    window.addEventListener('DOMContentLoaded', renderReels);
+  </script>
+</body>
+</html>

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Tribezz • Create Account</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --bg-dark: #030508;
+      --card-bg: rgba(13, 19, 32, 0.75);
+      --primary-gradient: linear-gradient(135deg, #00f2fe 0%, #8b5cf6 50%, #f43f5e 100%);
+      --accent-cyan: #00f2fe;
+      --accent-purple: #8b5cf6;
+      --accent-emerald: #10b981;
+      --text-main: #ffffff;
+      --text-muted: #94a3b8;
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(255, 255, 255, 0.035);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background-color: #000205;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .mobile-frame {
+      width: 100%;
+      max-width: 412px;
+      height: 100vh;
+      background-color: var(--bg-dark);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 30px 80px -20px rgba(139, 92, 246, 0.35), 0 0 0 1px var(--border-glass);
+    }
+
+    .glow-light {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      opacity: 0.35;
+      z-index: 1;
+    }
+    .glow-1 { width: 280px; height: 280px; top: -80px; right: -60px; background: #8b5cf6; }
+    .glow-2 { width: 240px; height: 240px; bottom: 80px; left: -60px; background: #00f2fe; }
+
+    .content-scroll-wrap {
+      flex: 1;
+      overflow-y: auto;
+      padding: 38px 22px 20px 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 5;
+      scrollbar-width: none;
+    }
+    .content-scroll-wrap::-webkit-scrollbar { display: none; }
+
+    .brand-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .brand-icon-box {
+      width: 60px;
+      height: 60px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(0,242,254,0.12), rgba(139,92,246,0.22));
+      border: 1.5px solid rgba(0, 242, 254, 0.35);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 30px rgba(0, 242, 254, 0.3);
+      margin-bottom: 12px;
+    }
+    .brand-icon-box svg { width: 32px; height: 32px; filter: drop-shadow(0 0 8px rgba(0,242,254,0.6)); }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -1.2px;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .form-card {
+      width: 100%;
+      background: var(--card-bg);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--border-glass);
+      border-radius: 26px;
+      padding: 22px 18px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      margin-bottom: 16px;
+    }
+
+    .avatar-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .avatar-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      padding: 2.5px;
+      background: var(--primary-gradient);
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 0 22px rgba(139, 92, 246, 0.45);
+      transition: transform 0.2s ease;
+    }
+    .avatar-circle:active { transform: scale(0.95); }
+
+    .avatar-circle img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #070b12;
+    }
+
+    .camera-badge {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 25px;
+      height: 25px;
+      background: #070b12;
+      border: 1.5px solid var(--accent-cyan);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--accent-cyan);
+    }
+
+    .avatar-hint {
+      font-size: 11px;
+      color: var(--accent-cyan);
+      font-weight: 700;
+      margin-top: 8px;
+      cursor: pointer;
+      letter-spacing: 0.2px;
+    }
+
+    .field-group {
+      margin-bottom: 13px;
+      position: relative;
+    }
+
+    .field-box {
+      width: 100%;
+      height: 48px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 0 14px 0 44px;
+      display: flex;
+      align-items: center;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .field-box:focus-within {
+      border-color: var(--accent-cyan);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 0 16px rgba(0, 242, 254, 0.22);
+    }
+
+    .field-box i.f-icon {
+      position: absolute;
+      left: 14px;
+      color: #64748b;
+      transition: color 0.2s;
+    }
+    .field-box:focus-within i.f-icon { color: var(--accent-cyan); }
+
+    .field-box input {
+      width: 100%;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 13.5px;
+      outline: none;
+      font-weight: 500;
+    }
+    .field-box input::placeholder { color: #526177; font-weight: 500; }
+
+    .toggle-pass-btn {
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-main {
+      width: 100%;
+      height: 48px;
+      background: var(--primary-gradient);
+      border: none;
+      border-radius: 16px;
+      color: #ffffff;
+      font-size: 14.5px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(139, 92, 246, 0.45);
+      margin-top: 8px;
+      transition: transform 0.15s ease, opacity 0.2s;
+    }
+    .btn-main:active { transform: scale(0.97); }
+    .btn-main:disabled { opacity: 0.65; cursor: not-allowed; }
+
+    /* ==================== 100% PERFECT CENTERED SUCCESS POPUP ==================== */
+    .success-modal-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(2, 4, 8, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+    .success-modal-overlay.show {
+      display: flex;
+      animation: fadeInBackdrop 0.25s ease-out;
+    }
+    @keyframes fadeInBackdrop {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .success-card {
+      width: 100%;
+      max-width: 320px;
+      background: #0e1526;
+      border: 1px solid rgba(0, 242, 254, 0.45);
+      border-radius: 28px;
+      padding: 28px 22px 22px 22px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(0, 242, 254, 0.25);
+      animation: popCenterScale 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popCenterScale {
+      from { transform: scale(0.75); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .success-icon-ring {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(0,242,254,0.2), rgba(16,185,129,0.3));
+      border: 2px solid #10b981;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 16px auto;
+      box-shadow: 0 0 28px rgba(16, 185, 129, 0.5);
+      animation: pulseModalGlow 1.8s infinite;
+    }
+    @keyframes pulseModalGlow {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+      50% { transform: scale(1.08); box-shadow: 0 0 32px rgba(16, 185, 129, 0.8); }
+    }
+
+    .success-card h3 { font-size: 19px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+    .success-card p { font-size: 13px; color: var(--text-muted); line-height: 1.45; margin-bottom: 22px; }
+
+    .modal-okay-btn {
+      width: 100%;
+      height: 48px;
+      background: var(--primary-gradient);
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+      transition: transform 0.15s ease;
+    }
+    .modal-okay-btn:active { transform: scale(0.96); }
+
+    .bottom-bar {
+      width: 100%;
+      background: rgba(8, 12, 20, 0.95);
+      backdrop-filter: blur(18px);
+      border-top: 1px solid var(--border-glass);
+      padding: 16px;
+      text-align: center;
+      z-index: 10;
+    }
+    .bottom-bar p { font-size: 13px; color: var(--text-muted); }
+    .switch-btn { color: var(--accent-cyan); font-weight: 800; text-decoration: none; margin-left: 5px; }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2.5px solid #fff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      display: none;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-frame">
+    <div class="glow-light glow-1"></div>
+    <div class="glow-light glow-2"></div>
+
+    <!-- ==================== PERFECT SCREEN-CENTERED POPUP ==================== -->
+    <div class="success-modal-overlay" id="successModal">
+      <div class="success-card">
+        <div class="success-icon-ring">
+          <i data-lucide="check" size="34" color="#10b981"></i>
+        </div>
+        <h3 id="modalTitle">Registration Complete! 🎉</h3>
+        <p id="modalDesc">User data has been successfully added to Google Sheets database.</p>
+        <button type="button" class="modal-okay-btn" onclick="redirectToLogin()">
+          <span>Okay</span>
+          <i data-lucide="arrow-right" size="18"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="content-scroll-wrap">
+      
+      <div class="brand-section">
+        <div class="brand-icon-box">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="tribezzGradSign" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f2fe"/>
+                <stop offset="50%" stop-color="#8b5cf6"/>
+                <stop offset="100%" stop-color="#f43f5e"/>
+              </linearGradient>
+            </defs>
+            <path d="M 24,26 L 76,26 L 36,52 L 76,52 L 36,78 L 76,78" stroke="url(#tribezzGradSign)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+        <h1 class="brand-title">Tribezz</h1>
+        <p class="brand-subtitle">Campus Resource Barter &amp; Student Feed</p>
+      </div>
+
+      <div class="form-card">
+        <div class="avatar-wrapper">
+          <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="handleAvatarFile(event)" />
+          <div class="avatar-circle" onclick="document.getElementById('avatarInput').click()">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" id="avatarDisplay" alt="Profile" />
+            <div class="camera-badge">
+              <i data-lucide="camera" size="13"></i>
+            </div>
+          </div>
+          <span class="avatar-hint" onclick="document.getElementById('avatarInput').click()">+ Set Profile Photo</span>
+        </div>
+
+        <form onsubmit="submitRegistration(event)">
+          <div class="field-group">
+            <div class="field-box">
+              <i data-lucide="user" size="17" class="f-icon"></i>
+              <input type="text" id="regFullName" placeholder="Full Name (e.g. BGPRO)" required />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-box">
+              <i data-lucide="at-sign" size="17" class="f-icon"></i>
+              <input type="text" id="regUsername" placeholder="Choose Username" required />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-box">
+              <i data-lucide="mail" size="17" class="f-icon"></i>
+              <input type="email" id="regEmail" placeholder="College Email Address" required />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-box">
+              <i data-lucide="lock" size="17" class="f-icon"></i>
+              <input type="password" id="regPassword" placeholder="Create Password" minlength="6" required />
+              <button type="button" class="toggle-pass-btn" onclick="togglePass('regPassword', this)">
+                <i data-lucide="eye" size="16"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-main" id="btnSubmit">
+            <span id="btnText">Create Account</span>
+            <div class="spinner" id="btnSpinner"></div>
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <footer class="bottom-bar">
+      <p>Already have an account? <a href="login.html" class="switch-btn">Log In</a></p>
+    </footer>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    const GOOGLE_SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzm7QbstEDAM1Ih8-sINvOVExTyHh8Sqtv-Xdt-XDmqCxk-lpAg9hpaZEFyOFW6WMZsuQ/exec";
+
+    let avatarDataUri = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150";
+
+    function handleAvatarFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        avatarDataUri = evt.target.result;
+        document.getElementById('avatarDisplay').src = avatarDataUri;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function togglePass(id, btn) {
+      const input = document.getElementById(id);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerHTML = '<i data-lucide="eye-off" size="16"></i>';
+      } else {
+        input.type = 'password';
+        btn.innerHTML = '<i data-lucide="eye" size="16"></i>';
+      }
+      lucide.createIcons();
+    }
+
+    async function submitRegistration(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('regFullName').value.trim();
+      const username = document.getElementById('regUsername').value.trim().replace('@', '');
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+
+      const btn = document.getElementById('btnSubmit');
+      const spinner = document.getElementById('btnSpinner');
+      const btnText = document.getElementById('btnText');
+
+      btn.disabled = true;
+      spinner.style.display = 'block';
+      btnText.innerText = "Saving...";
+
+      const payload = {
+        action: "register",
+        name: name,
+        username: username,
+        email: email,
+        password: password,
+        avatar: avatarDataUri
+      };
+
+      try {
+        const res = await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+
+        if (result.success) {
+          // Save session to LocalStorage
+          const userObj = { name, username, handle: username, email, avatar: avatarDataUri, ecoPoints: 50 };
+          localStorage.setItem('tribezz_user_profile', JSON.stringify(userObj));
+          localStorage.setItem('user_name', name);
+          localStorage.setItem('user_handle', username);
+          localStorage.setItem('user_email', email);
+          localStorage.setItem('user_avatar', avatarDataUri);
+
+          // Trigger Centered Animated Modal Popup
+          document.getElementById('modalTitle').innerText = "Registration Complete! 🎉";
+          document.getElementById('modalDesc').innerText = `User data for @${username} has been successfully added to Google Sheets.`;
+          document.getElementById('successModal').classList.add('show');
+          lucide.createIcons();
+        } else {
+          alert(result.message || "Registration failed. Username or Email already exists.");
+        }
+      } catch (err) {
+        alert("Server communication error. Please check your internet connection.");
+      } finally {
+        btn.disabled = false;
+        spinner.style.display = 'none';
+        btnText.innerText = "Create Account";
+      }
+    }
+
+    // Redirect handler when user clicks "Okay"
+    function redirectToLogin() {
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
